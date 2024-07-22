@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { Poppins } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+import "./globals.css";
+import Navbar from "@/core/components/navbar";
+
+const poppins = Poppins({
+    subsets: ["latin"],
+    display: "swap",
+    variable: "--font-poppins", // you can use the 'poppins' variable in your styles or components
+    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 export const metadata: Metadata = {
     title: "Space Finder",
@@ -16,7 +23,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={inter.className}>{children}</body>
+            <body className={poppins.className}>
+                <Navbar />
+                {children}
+            </body>
         </html>
     );
 }
