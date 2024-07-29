@@ -1,4 +1,11 @@
-export default function Home() {
+import { auth } from "@/core/lib/auth";
+
+export default async function Home() {
+    const session = await auth();
+    if (!session || !session.user) {
+        return <>sign in pls</>;
+    }
+
     return (
         <main className="h-[calc(100vh-9rem)]">
             <div className="h-full flex flex-col items-center justify-between text-center">
