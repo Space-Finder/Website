@@ -1,36 +1,12 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Space Finder
+Haven't thought of a name for this project yet.  
+Knowing me i'll end up leaving it unnamed as "Space Finder" till the very end.  
 
-## Getting Started
+----
 
-First, run the development server:
+Every day when us students come to each common for their classes, it’s hard to figure out where to go. Sometimes the teachers haven't yet written the space yet, other times the whiteboard gets too crowded. This problem is particularly evident upstairs in the science area. In one crowded hallway, 100s of kids are trying to look at a piece of paper trying to find where there next class is. This makes it hard for others to walk to their class (due to the crowding). 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+What if there was a way to fix this? Something to simply the experience of booking spaces for the teachers, and something to simply the process for students to see their classes.
+Perhaps a solution could be to display the space allocations on the digi screens. I’ve heard from many students that the digi screens don’t serve much of a purpose. Some people have even called the tvs simply just “overpriced clocks” as the little clock on the bottom right is the only purpose they use it for.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+A program that would achieve these two issues (simple space allocation and displaying of said allocation) would make life so much easier for teachers and students. Teachers also wouldn’t have to worry about forgetting to write on the board as the spaces could just be shown in the digi screens which there exists one of in every common.
