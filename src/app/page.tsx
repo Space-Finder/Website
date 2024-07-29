@@ -8,7 +8,18 @@ export default async function Home() {
 
     return (
         <main className="h-[calc(100vh-9rem)]">
-            <div className="h-full flex flex-col items-center justify-between text-center">
+            <h1>{session.user.id}</h1>
+            <h1>{session.user.name}</h1>
+            <h1>{session.user.email}</h1>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+                alt="pfp"
+                src={
+                    session.user.image ??
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaTChgSpRr9-3TLtz0LyYFS5VIpzzIq7ZJoA&s"
+                }
+            />
+            {/* <div className="h-full flex flex-col items-center justify-between text-center">
                 <div className="h-full flex flex-col items-center justify-center text-center gap-12">
                     <h1 className="text-[7rem] leading-snug">
                         Where{" "}
@@ -26,7 +37,7 @@ export default async function Home() {
                 <p className="uppercase text-lg text-[#72563E] tracking-[0.15em]">
                     Classroom allocation made simple
                 </p>
-            </div>
+            </div> */}
         </main>
     );
 }
