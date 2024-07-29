@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 
 import "./globals.css";
+import { auth } from "@/core/lib/auth";
 import Navbar from "@/core/components/navbar";
 
 const poppins = Poppins({
@@ -16,16 +18,20 @@ export const metadata: Metadata = {
     description: "Classroom Allocation Made Simple",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await auth();
+
     return (
         <html lang="en">
             <body className={poppins.className}>
-                <Navbar />
-                {children}
+                <SessionProvider session={session}>
+                    <Navbar />
+                    {children}
+                </SessionProvider>
             </body>
         </html>
     );
