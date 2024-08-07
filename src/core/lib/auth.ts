@@ -5,16 +5,22 @@ import Google from "next-auth/providers/google";
 import prisma from "@/core/db/orm";
 
 const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
+const SCHOOL_DOMAIN = "ormiston.school.nz";
 
 const OPTIONS = {
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
             clientSecret: process.env.AUTH_GOOGLE_SECRET,
+            authorization: `https://accounts.google.com/o/oauth2/auth?response_type=code&hd=${SCHOOL_DOMAIN}`,
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
     adapter: PrismaAdapter(prisma),
+    callbacks: {
+        signIn: ({ user }) =>
+            !!(user.email && user.email.endsWith("@" + SCHOOL_DOMAIN)),
+    },
     session: {
         strategy: "jwt",
         maxAge: ACCESS_TOKEN_EXPIRY,
