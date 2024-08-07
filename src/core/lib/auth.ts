@@ -21,6 +21,9 @@ const OPTIONS = {
         signIn: ({ user }) =>
             !!(user.email && user.email.endsWith("@" + SCHOOL_DOMAIN)),
     },
+    pages: {
+        newUser: "/onboarding",
+    },
     session: {
         strategy: "jwt",
         maxAge: ACCESS_TOKEN_EXPIRY,
