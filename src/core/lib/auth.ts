@@ -4,6 +4,8 @@ import Google from "next-auth/providers/google";
 
 import prisma from "@/core/db/orm";
 
+const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
+
 const OPTIONS = {
     providers: [
         Google({
@@ -15,7 +17,7 @@ const OPTIONS = {
     adapter: PrismaAdapter(prisma),
     session: {
         strategy: "jwt",
-        maxAge: 15 * 60, // 15 min
+        maxAge: ACCESS_TOKEN_EXPIRY,
     },
     events: {
         async signIn(message) {
