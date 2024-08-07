@@ -9,8 +9,8 @@ const Navbar = () => {
     const signedIn = session.status === "authenticated";
 
     return (
-        <nav className="border-black border-b-2">
-            <div className="flex justify-between m-6 items-center font-poppins">
+        <nav className="border-b-2 border-black">
+            <div className="font-poppins m-6 flex items-center justify-between">
                 <h1 className="text-2xl">SpaceFinder</h1>
                 <form
                     action={async () => {
@@ -19,7 +19,7 @@ const Navbar = () => {
                 >
                     <button
                         type="submit"
-                        className="text-white text-xl bg-[#0B1328] py-3 px-14 rounded-xl"
+                        className="rounded-xl bg-[#0B1328] px-14 py-3 text-xl text-white"
                     >
                         {signedIn ? "Logout" : "Login"}
                     </button>
