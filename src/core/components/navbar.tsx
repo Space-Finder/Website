@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { signIn, signOut } from "next-auth/react";
 
@@ -11,7 +12,9 @@ const Navbar = () => {
     return (
         <nav className="border-b-2 border-black">
             <div className="font-poppins m-6 flex items-center justify-between">
-                <h1 className="text-2xl">SpaceFinder</h1>
+                <Link href="/" className="text-2xl">
+                    SpaceFinder
+                </Link>
                 <form
                     action={async () => {
                         signedIn ? signOut() : signIn("google");
