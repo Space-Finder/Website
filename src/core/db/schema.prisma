@@ -7,6 +7,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Common {
+  id     String  @id @unique @default(cuid())
+  name   String  @unique
+  color  String?
+  spaces Space[]
+
+  @@map("commons")
+}
+
+model Space {
+  id   String @id @unique @default(cuid())
+  name String
+
+  commonId String @map("common_id")
+  common   Common @relation(fields: [commonId], references: [id])
+
+  @@map("spaces")
+}
+
+model Class {
+  id   String @id @unique @default(cuid())
+  line Int
+  name String
+
+  teacherId String  @map("teacher_id")
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+
+  @@map("classes")
+}
+
+model Teacher {
+  id   String @id @unique @default(cuid())
+  code String @unique
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  classes Class[]
+
+  @@map("teachers")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  image         String?
+  emailVerified DateTime? @map("email_verified")
+  isOnboarded   Boolean   @default(false) @map("is_onboarded")
+  kamarPassword String?   @map("kamar_password")
+  isTeacher     Boolean   @default(false) @map("is_teacher")
+  accounts      Account[]
+  sessions      Session[]
+  teachers      Teacher[]
+  classes       Class[]
+
+  @@map("users")
+}
+
+// Authentication Related Models
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -37,24 +100,11 @@ model Session {
   @@map("sessions")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  image         String?
-  kamarVerified Boolean   @default(false)
-  kamarPassword String?
-  accounts      Account[]
-  sessions      Session[]
-
-  @@map("users")
-}
-
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
 
   @@unique([identifier, token])
-  @@map("verificationtokens")
+  @@map("verification_tokens")
 }
