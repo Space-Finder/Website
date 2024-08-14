@@ -1,43 +1,52 @@
-import { auth } from "@/core/lib/auth";
+import { redirect } from "next/navigation";
+
+import { auth, signIn } from "@/core/lib/auth";
 
 export default async function Home() {
     const session = await auth();
-    if (!session || !session.user) {
-        return <>sign in pls</>;
-    }
+    const signedIn = session && session.user !== null;
 
     return (
-        <main className="h-[calc(100vh-9rem)]">
-            <h1>{session.user.id}</h1>
-            <h1>{session.user.name}</h1>
-            <h1>{session.user.email}</h1>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-                alt="pfp"
-                src={
-                    session.user.image ??
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaTChgSpRr9-3TLtz0LyYFS5VIpzzIq7ZJoA&s"
-                }
-            />
-            {/* <div className="h-full flex flex-col items-center justify-between text-center">
-                <div className="h-full flex flex-col items-center justify-center text-center gap-12">
+        <main className="font-poppins h-[calc(100vh-9rem)]">
+            <div className="flex h-full flex-col items-center justify-between text-center">
+                <div className="flex h-full flex-col items-center justify-center gap-12 text-center">
                     <h1 className="text-[7rem] leading-snug">
                         Where{" "}
                         <span className="text-[#72563E]">
-                            Learn<span className="text-yellow-400">I</span>ng
+                            Learn
+                            <span className="relative inline-block">
+                                <span className="relative inline-block h-16 w-2 bg-[#F9BC12]">
+                                    <span className="absolute left-1/2 top-[-0.78rem] h-0 w-0 -translate-x-1/2 transform border-b-[0.8rem] border-l-[0.28rem] border-r-[0.28rem] border-[#64635C] border-l-transparent border-r-transparent"></span>
+                                    <span className="absolute bottom-2 left-0 h-0.5 w-full bg-black"></span>
+                                    <span className="absolute bottom-0 left-0 h-2 w-full bg-[#C85A6C]"></span>
+                                </span>
+                            </span>
+                            ng
                         </span>
                         <br />
                         <span className="text-[#12A88C]">Finds</span> its{" "}
-                        <span className="underline text-[#DA6F6E]">place</span>
+                        <span className="text-[#DA6F6E] underline">place</span>
                     </h1>
-                    <button className="bg-blue-500 text-white px-20 py-3 rounded-xl text-2xl">
-                        Login
-                    </button>
+                    <form
+                        action={async () => {
+                            "use server";
+                            signedIn
+                                ? redirect("/dashboard")
+                                : await signIn("google");
+                        }}
+                    >
+                        <button
+                            type="submit"
+                            className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
+                        >
+                            {signedIn ? "Go To Dashboard" : "Login"}
+                        </button>
+                    </form>
                 </div>
-                <p className="uppercase text-lg text-[#72563E] tracking-[0.15em]">
+                <p className="text-lg uppercase tracking-[0.15em] text-[#72563E]">
                     Classroom allocation made simple
                 </p>
-            </div> */}
+            </div>
         </main>
     );
 }
