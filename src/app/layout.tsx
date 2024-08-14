@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
 import "./globals.css";
 import { auth } from "@/core/lib/auth";
+import { all_fonts } from "@/core/lib/fonts";
 import Navbar from "@/core/components/navbar";
-
-const poppins = Poppins({
-    subsets: ["latin"],
-    display: "swap",
-    variable: "--font-poppins", // you can use the 'poppins' variable in your styles or components
-    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
 
 export const metadata: Metadata = {
     title: "Space Finder",
@@ -24,10 +17,11 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     const session = await auth();
+    const font_classname = all_fonts.map((font) => font.variable).join(" ");
 
     return (
         <html lang="en">
-            <body className={poppins.className}>
+            <body className={font_classname}>
                 <SessionProvider session={session}>
                     <Navbar />
                     {children}
