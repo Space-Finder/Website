@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { auth, signIn } from "@/core/lib/auth";
 
-const BACKGROUND_IMAGE = "/gradient.png"
+const BACKGROUND_IMAGE = "/gradient.webp";
 
 export default async function Home() {
     const session = await auth();
