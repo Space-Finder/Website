@@ -19,6 +19,16 @@ const OPTIONS = {
     secret: process.env.NEXTAUTH_SECRET,
     adapter: PrismaAdapter(prisma),
     callbacks: {
+        jwt({ token, user }) {
+            if (user && user.id) {
+                token.id = user.id;
+            }
+            return token;
+        },
+        session({ session, token }) {
+            session.user.id = token.id as string;
+            return session;
+        },
         authorized: async ({ auth }) => !!auth,
         signIn: ({ user }) =>
             !!(user.email && user.email.endsWith("@" + SCHOOL_DOMAIN)),
