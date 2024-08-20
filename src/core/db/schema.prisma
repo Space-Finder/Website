@@ -26,7 +26,7 @@ model Space {
   @@map("spaces")
 }
 
-model Class {
+model Course {
   id   String @id @unique @default(cuid())
   line Int
   name String
@@ -47,7 +47,7 @@ model Teacher {
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  classes Class[]
+  classes Course[]
 
   @@map("teachers")
 }
@@ -64,7 +64,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   teachers      Teacher[]
-  classes       Class[]
+  classes       Course[]
 
   @@map("users")
 }
