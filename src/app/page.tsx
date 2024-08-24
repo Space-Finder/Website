@@ -55,7 +55,7 @@ export default async function Home() {
                     </p>
                 </div>
             </main>
-            <style global>{`
+            <style>{`
                 body {
                     background:  url(${BACKGROUND_IMAGE});
                 }
