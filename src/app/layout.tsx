@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 
-import { auth } from "@/core/lib/auth";
+import { auth, ACCESS_TOKEN_EXPIRY } from "@/core/lib/auth";
 import { Theme } from "@radix-ui/themes";
 import { all_fonts } from "@/core/lib/fonts";
 import Navbar from "@/core/components/navbar";
@@ -27,7 +27,10 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body className={`bg-[${BACKGROUND_COLOR}] ${font_classnames}`}>
-                <SessionProvider session={session}>
+                <SessionProvider
+                    session={session}
+                    refetchInterval={ACCESS_TOKEN_EXPIRY}
+                >
                     <Theme hasBackground={false}>
                         <Navbar />
                         {children}

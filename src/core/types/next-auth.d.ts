@@ -5,6 +5,7 @@ import { DefaultJWT } from "next-auth/jwt";
 declare module "next-auth" {
     interface Session extends DefaultSession {
         user: { id: string };
+        error?: "RefreshTokenError";
     }
     interface User extends DatabaseUser {}
 }
@@ -12,5 +13,9 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
     interface JWT extends DefaultJWT {
         id: string;
+        access_token: string;
+        expires_at: number;
+        refresh_token?: string;
+        error?: "RefreshTokenError";
     }
 }

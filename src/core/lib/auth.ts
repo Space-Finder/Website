@@ -7,8 +7,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 const SIGN_IN_URL = "/login";
 const NEW_USER_URL = "/onboarding";
 
-const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
-const SCHOOL_DOMAIN = "ormiston.school.nz";
+export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
+export const SCHOOL_DOMAIN = "ormiston.school.nz";
 const inDevelopmentMode = process.env.NODE_ENV == "development";
 
 const GOOGLE_AUTHORIZATION_URL = {
@@ -21,11 +21,71 @@ const GOOGLE_AUTHORIZATION_URL = {
 };
 
 const CALLBACKS = {
-    jwt({ token, user }) {
+    async jwt({ token, user, account }) {
         if (user && user.id) {
             token.id = user.id;
         }
-        return token;
+
+        if (account) {
+            // First-time login, save the `access_token`, its expiry and the `refresh_token`
+            token.access_token = account.access_token!;
+            token.expires_at = account.expires_at!;
+            token.refresh_token = account.refresh_token!;
+
+            return token;
+        }
+
+        // Subsequent logins, but the `access_token` is still valid
+        if (Date.now() < token.expires_at * 1000) {
+            return token;
+        }
+
+        // Subsequent logins, but the `access_token` has expired, try to refresh it
+        if (!token.refresh_token) {
+            throw new TypeError("Missing refresh_token");
+        }
+
+        try {
+            const response = await fetch(
+                "https://oauth2.googleapis.com/token",
+                {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        client_id: process.env.AUTH_GOOGLE_ID,
+                        client_secret: process.env.AUTH_GOOGLE_SECRET,
+                        grant_type: "refresh_token",
+                        refresh_token: token.refresh_token!,
+                    }),
+                },
+            );
+
+            const tokensOrError = await response.json();
+
+            if (!response.ok) {
+                throw tokensOrError;
+            }
+
+            const newTokens = tokensOrError as {
+                access_token: string;
+                expires_in: number;
+                refresh_token?: string;
+            };
+
+            token.access_token = newTokens.access_token;
+            token.expires_at = Math.floor(
+                Date.now() / 1000 + newTokens.expires_in,
+            );
+
+            if (newTokens.refresh_token) {
+                token.refresh_token = newTokens.refresh_token;
+            }
+            return token;
+        } catch (error) {
+            // If we fail to refresh the token, return an error so we can handle it on the page
+            console.error("Error refreshing access_token", error);
+            token.error = "RefreshTokenError";
+            return token;
+        }
     },
     session({ session, token }) {
         session.user.id = token.id as string;
