@@ -20,7 +20,8 @@
         "next-auth": "^5.0.0-beta.19",
         "react": "^18",
         "react-dom": "^18",
-        "react-spinners": "^0.14.1"
+        "react-spinners": "^0.14.1",
+        "react-toastify": "^10.0.5"
     },
     "prisma": {
         "schema": "./src/core/db/schema.prisma"
