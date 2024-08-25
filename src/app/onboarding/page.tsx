@@ -1,9 +1,79 @@
-import React from "react";
+import { auth } from "@/core/lib/auth";
+import prisma from "@/core/db/orm";
+import { redirect } from "next/navigation";
 
-const page = () => {
-    // Check if kamar is already verified and if so redirect back to dashboard
-    // on dashboard page if not verified, show that
-    return <div>Welcome</div>;
-};
+export default async function Onboarding() {
+    const user = await getUser();
 
-export default page;
+    if ((await isTeacher(user.email)) && !user.isTeacher) {
+        await setupTeacherAccount(user.email);
+    }
+
+    if (!user.kamarPassword) {
+        return redirect("/onboarding/getKamar");
+    }
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { isOnboarded: true },
+    });
+
+    return redirect("/dashboard");
+}
+
+async function isTeacher(email: string) {
+    const URL = `${process.env.API_URL}/api/teachers/verify?${new URLSearchParams(
+        {
+            email,
+        },
+    )}`;
+
+    try {
+        const response = await fetch(URL);
+        if (!response.ok) {
+            throw new Error("There was some issue");
+        }
+        const data: {
+            success: boolean;
+            isTeacher: boolean;
+        } = await response.json();
+
+        return data.isTeacher;
+    } catch {
+        throw new Error("API down");
+    }
+}
+
+async function getUser() {
+    const session = await auth();
+
+    if (!session || !session.user) {
+        return await redirect("/login");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: session.user.id,
+        },
+    });
+
+    if (!user?.email) {
+        return await redirect("/login");
+    }
+
+    if (user.isOnboarded) {
+        return await redirect("/dashboard");
+    }
+
+    return user;
+}
+
+async function setupTeacherAccount(email: string) {
+    // Logic to set up teacher account
+    // include rest of linking here
+
+    await prisma.user.update({
+        where: { email },
+        data: { isTeacher: true },
+    });
+}
