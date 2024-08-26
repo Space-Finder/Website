@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
+    const router = useRouter();
+
     return (
         <div className="container mx-auto flex min-h-[calc(100vh-100px)] items-center">
             <div className="mx-auto flex max-w-sm flex-col items-center text-center">
@@ -64,7 +69,7 @@ export default function NotFound() {
                     />
                 </svg>
 
-                <h1 className="mt-3 text-2xl font-semibold text-gray-800 md:text-3xl dark:text-white">
+                <h1 className="mt-3 text-2xl font-semibold text-gray-800 dark:text-white md:text-3xl">
                     We lost this page
                 </h1>
                 <p className="mt-4 text-gray-500 dark:text-gray-400">
@@ -73,9 +78,11 @@ export default function NotFound() {
                 </p>
 
                 <div className="mt-6 flex w-full shrink-0 items-center gap-x-3 sm:w-auto">
-                    <Link
-                        href="/"
-                        className="flex w-1/2 items-center justify-center gap-x-2 rounded-lg border bg-white px-5 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 sm:w-auto dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+                    <button
+                        onClick={() => {
+                            router.back();
+                        }}
+                        className="flex w-1/2 items-center justify-center gap-x-2 rounded-lg border bg-white px-5 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 sm:w-auto"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -92,6 +99,12 @@ export default function NotFound() {
                             />
                         </svg>
 
+                        <span>Go Back</span>
+                    </button>
+                    <Link
+                        href="/"
+                        className="flex w-1/2 items-center justify-center gap-x-2 rounded-lg border bg-gray-700 px-5 py-2 text-sm text-white transition-colors duration-200 hover:bg-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 sm:w-auto"
+                    >
                         <span>Take Me Home</span>
                     </Link>
                 </div>
