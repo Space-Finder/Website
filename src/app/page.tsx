@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-
+import Link from "next/link";
 import { auth, signIn } from "@/core/lib/auth";
 
 const BACKGROUND_IMAGE = "/gradient.webp";
@@ -34,21 +33,28 @@ export default async function Home() {
                                 place
                             </span>
                         </h1>
-                        <form
-                            action={async () => {
-                                "use server";
-                                signedIn
-                                    ? redirect("/dashboard")
-                                    : await signIn("google");
-                            }}
-                        >
-                            <button
-                                type="submit"
+                        {signedIn ? (
+                            <Link
                                 className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
+                                href="/dashboard"
                             >
-                                {signedIn ? "Go To Dashboard" : "Login"}
-                            </button>
-                        </form>
+                                Go To Dashboard
+                            </Link>
+                        ) : (
+                            <form
+                                action={async () => {
+                                    "use server";
+                                    await signIn("google");
+                                }}
+                            >
+                                <button
+                                    type="submit"
+                                    className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
+                                >
+                                    Login
+                                </button>
+                            </form>
+                        )}
                     </div>
                     <p className="text-lg uppercase tracking-[0.15em] text-[#72563E]">
                         Classroom allocation made simple
