@@ -9,10 +9,13 @@ datasource db {
 }
 
 model Common {
-  id     String  @id @unique @default(cuid())
-  name   String  @unique
-  color  String?
-  spaces Space[]
+  id    String  @id @unique @default(cuid())
+  name  String  @unique
+  color String?
+
+  spaces  Space[]
+  Teacher Teacher[]
+  Course  Course[]
 
   @@map("commons")
 }
@@ -30,24 +33,30 @@ model Space {
 model Course {
   id   String @id @unique @default(cuid())
   line Int
+  code String
   name String
 
+  commonId  String  @map("common_id")
   teacherId String  @map("teacher_id")
-  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  userId    String? @map("user_id")
 
-  user   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
+  user    User?   @relation(fields: [userId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  common  Common  @relation(fields: [commonId], references: [id], onDelete: Cascade)
 
   @@map("classes")
 }
 
 model Teacher {
-  id   String @id @unique @default(cuid())
-  code String @unique
+  id    String @id @unique @default(cuid())
+  code  String @unique
+  email String @unique
 
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String? @map("user_id")
+  commonId String  @map("common_id")
 
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  common  Common   @relation(fields: [commonId], references: [id])
   classes Course[]
 
   @@map("teachers")
