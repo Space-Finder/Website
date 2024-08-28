@@ -8,6 +8,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Booking {
+  id           String  @id @unique @default(cuid())
+  week         Int
+  periodNumber Int     @map("period_number")
+  spaceId      String
+  courseId     String
+  teacherId    String
+  space        Space   @relation(fields: [spaceId], references: [id])
+  course       Course  @relation(fields: [courseId], references: [id])
+  teacher      Teacher @relation(fields: [teacherId], references: [id])
+
+  @@map("bookings")
+}
+
 model Common {
   id    String  @id @unique @default(cuid())
   name  String  @unique
@@ -24,8 +38,9 @@ model Space {
   id   String @id @unique @default(cuid())
   name String
 
-  commonId String @map("common_id")
-  common   Common @relation(fields: [commonId], references: [id])
+  commonId String    @map("common_id")
+  common   Common    @relation(fields: [commonId], references: [id])
+  Booking  Booking[]
 
   @@map("spaces")
 }
@@ -39,8 +54,9 @@ model Course {
   commonId  String @map("common_id")
   teacherId String @map("teacher_id")
 
-  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  common  Common  @relation(fields: [commonId], references: [id], onDelete: Cascade)
+  teacher Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  common  Common    @relation(fields: [commonId], references: [id], onDelete: Cascade)
+  Booking Booking[]
 
   @@map("classes")
 }
@@ -53,9 +69,10 @@ model Teacher {
   userId   String? @unique @map("user_id")
   commonId String  @map("common_id")
 
-  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  common  Common   @relation(fields: [commonId], references: [id])
+  user    User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  common  Common    @relation(fields: [commonId], references: [id])
   classes Course[]
+  Booking Booking[]
 
   @@map("teachers")
 }
