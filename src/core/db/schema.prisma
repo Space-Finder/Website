@@ -36,11 +36,9 @@ model Course {
   code String
   name String
 
-  commonId  String  @map("common_id")
-  teacherId String  @map("teacher_id")
-  userId    String? @map("user_id")
+  commonId  String @map("common_id")
+  teacherId String @map("teacher_id")
 
-  user    User?   @relation(fields: [userId], references: [id])
   teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   common  Common  @relation(fields: [commonId], references: [id], onDelete: Cascade)
 
@@ -52,7 +50,7 @@ model Teacher {
   code  String @unique
   email String @unique
 
-  userId   String? @map("user_id")
+  userId   String? @unique @map("user_id")
   commonId String  @map("common_id")
 
   user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -71,10 +69,10 @@ model User {
   isOnboarded   Boolean   @default(false) @map("is_onboarded")
   kamarPassword String?   @map("kamar_password")
   isTeacher     Boolean   @default(false) @map("is_teacher")
-  accounts      Account[]
-  sessions      Session[]
-  teachers      Teacher[]
-  classes       Course[]
+
+  teacher  Teacher?
+  accounts Account[]
+  sessions Session[]
 
   @@map("users")
 }
