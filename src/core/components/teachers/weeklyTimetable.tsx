@@ -5,123 +5,55 @@ import React, { useEffect, useRef, useState } from "react";
 import { Course } from "@prisma/client";
 import { Period } from "@/core/types/other";
 import { PERIODS } from "@/core/lib/periods";
+import { createEventFactory, HOURS } from "./event";
+import { formatTime, getWeekDays } from "@/core/lib/time";
+
+const DATE_FORMAT_OPTIONS = {
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+} satisfies Intl.DateTimeFormatOptions;
 
 const WeeklyTimetable = ({
     lineList,
     teacherCommon,
+    locations,
 }: {
     lineList: Array<Course | null>;
     teacherCommon: string;
+    locations: Array<string[] | null>;
 }) => {
-    const DATE_FORMAT_OPTIONS = {
-        month: "long",
-        day: "numeric",
-        weekday: "long",
-    } satisfies Intl.DateTimeFormatOptions;
-
-    const today = new Date();
-    const weekdays = getWeekDays();
-
-    const timeSlots: string[] = [];
-    for (let hour = 8; hour <= 16; hour++) {
-        timeSlots.push(`${hour}:00`);
-    }
-
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
     const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0);
 
     useEffect(() => {
         if (timeSlotsContainerRef.current) {
             const height = timeSlotsContainerRef.current.offsetHeight;
-            setTimeSlotsHeight(height - Math.ceil(height / timeSlots.length));
+            setTimeSlotsHeight(height - Math.ceil(height / (HOURS + 1)));
         }
-    }, [timeSlots.length]);
+    }, []);
 
-    const events: Period[][] = [];
-    for (const day of PERIODS) {
-        const day_events = [];
-        for (const period of day) {
-            if (period.type !== "class") {
-                day_events.push(period);
-                continue;
-            }
+    const today = new Date();
+    const weekdays = getWeekDays();
 
-            const course = lineList[period.line - 1];
-            if (course) {
-                day_events.push(period);
-            }
-        }
-        events.push(day_events);
-    }
+    const timeSlots: string[] = Array.from(
+        { length: 9 },
+        (_, i) => `${8 + i}:00`,
+    );
 
-    const hours = timeSlots.length - 1;
-    const hour_px = timeSlotsHeight / hours;
+    const events: Period[][] = PERIODS.map((day) =>
+        day.filter(
+            (period) =>
+                period.type !== "class" || lineList[period.line - 1] !== null,
+        ),
+    );
 
-    const createEvent = (event: Period) => {
-        const [startHour, startMinute] = event.start.split(":");
-        const [endHour, endMinute] = event.end.split(":");
-
-        const offset =
-            (Number(startHour) + Number(startMinute) / 60 - hours) * hour_px;
-
-        const endOffset =
-            (Number(endHour) + Number(endMinute) / 60 - hours) * hour_px;
-
-        const height = endOffset - offset;
-
-        if (event.type == "break") {
-            return (
-                <div
-                    style={{
-                        top: `${offset + hour_px}px`,
-                        height: `${height - 3}px`,
-                    }}
-                    className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-orange-600 bg-orange-50 p-1.5"
-                >
-                    <p className="text-xs font-semibold">Break</p>
-                    {Number(startHour) !== 10 && (
-                        <p className="text-xs font-semibold text-orange-600">
-                            {formatTime(event.start)} - {formatTime(event.end)}
-                        </p>
-                    )}
-                </div>
-            );
-        } else if (event.type == "custom") {
-            return (
-                <div
-                    style={{
-                        top: `${offset + hour_px}px`,
-                        height: `${height - 3}px`,
-                    }}
-                    className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-green-600 bg-green-50 p-1.5"
-                >
-                    <p className="text-xs font-semibold">{event.name}</p>
-                    <p className="mb-px text-xs font-bold text-green-900">
-                        {teacherCommon}
-                    </p>
-                </div>
-            );
-        }
-
-        return (
-            <div
-                style={{
-                    top: `${offset + hour_px}px`,
-                    height: `${height - 3}px`,
-                }}
-                className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-blue-600 bg-blue-50 p-1.5"
-            >
-                <p className="text-xs font-semibold">
-                    {lineList[event.line - 1]?.name} - (
-                    {lineList[event.line - 1]?.code})
-                </p>
-                <p className="mb-px text-xs font-normal text-gray-900">ee</p>
-                <p className="text-xs font-semibold text-blue-600">
-                    {formatTime(event.start)} - {formatTime(event.end)}
-                </p>
-            </div>
-        );
-    };
+    const getEvent = createEventFactory(
+        locations,
+        teacherCommon,
+        lineList,
+        timeSlotsHeight,
+    );
 
     const Weekdays = () => {
         return (
@@ -145,10 +77,10 @@ const WeeklyTimetable = ({
                                         weekday: "short",
                                     })}
                                 </h1>
-                                {events[idx].map((e, idx2) => {
+                                {events[idx].map((event, event_index) => {
                                     return (
-                                        <React.Fragment key={idx2}>
-                                            {createEvent(e)}
+                                        <React.Fragment key={event_index}>
+                                            {getEvent(event)}
                                         </React.Fragment>
                                     );
                                 })}
@@ -186,9 +118,9 @@ const WeeklyTimetable = ({
                             </h6>
                         </div>
                         <div className="flex items-center gap-px rounded-lg bg-gray-100 p-1">
-                            <button className="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600">
+                            {/* <button className="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600">
                                 Day
-                            </button>
+                            </button> */}
                             <button className="rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-indigo-600 transition-all duration-300 hover:bg-white hover:text-indigo-600">
                                 Week
                             </button>
@@ -233,24 +165,5 @@ const WeeklyTimetable = ({
         </div>
     );
 };
-
-function getWeekDays(): Date[] {
-    const date = new Date();
-    const firstDayOfWeek = date.getDate() - date.getDay() + 1; // Monday
-    const weekDays = [];
-
-    for (let i = 0; i < 5; i++) {
-        const currentDay = new Date(date.setDate(firstDayOfWeek + i));
-        weekDays.push(currentDay);
-    }
-
-    return weekDays;
-}
-
-function formatTime(timeString: string) {
-    const [hourString, minute] = timeString.split(":");
-    const hour = +hourString % 24;
-    return (hour % 12 || 12) + ":" + minute + (hour < 12 ? "AM" : "PM");
-}
 
 export default WeeklyTimetable;
