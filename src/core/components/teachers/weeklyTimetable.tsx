@@ -74,9 +74,9 @@ const WeeklyTimetable = ({
                 <div
                     style={{
                         top: `${offset + hour_px}px`,
-                        height: `${height}px`,
+                        height: `${height - 3}px`,
                     }}
-                    className="absolute left-0 right-0 z-10 rounded border-l-2 border-orange-600 bg-orange-50 p-1.5"
+                    className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-orange-600 bg-orange-50 p-1.5"
                 >
                     <p className="text-xs font-semibold">Break</p>
                     {Number(startHour) !== 10 && (
@@ -91,9 +91,9 @@ const WeeklyTimetable = ({
                 <div
                     style={{
                         top: `${offset + hour_px}px`,
-                        height: `${height}px`,
+                        height: `${height - 3}px`,
                     }}
-                    className="absolute left-0 right-0 z-10 rounded border-l-2 border-green-600 bg-green-50 p-1.5"
+                    className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-green-600 bg-green-50 p-1.5"
                 >
                     <p className="text-xs font-semibold">{event.name}</p>
                     <p className="mb-px text-xs font-bold text-green-900">
@@ -105,8 +105,11 @@ const WeeklyTimetable = ({
 
         return (
             <div
-                style={{ top: `${offset + hour_px}px`, height: `${height}px` }}
-                className="absolute left-0 right-0 z-10 rounded border-l-2 border-blue-600 bg-blue-50 p-1.5"
+                style={{
+                    top: `${offset + hour_px}px`,
+                    height: `${height - 3}px`,
+                }}
+                className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-blue-600 bg-blue-50 p-1.5"
             >
                 <p className="text-xs font-semibold">
                     {lineList[event.line - 1]?.name} - (
@@ -117,6 +120,43 @@ const WeeklyTimetable = ({
                     {formatTime(event.start)} - {formatTime(event.end)}
                 </p>
             </div>
+        );
+    };
+
+    const Weekdays = () => {
+        return (
+            <>
+                {weekdays.map((d, idx) => {
+                    const isToday = today.getTime() === d.getTime();
+
+                    return (
+                        <React.Fragment key={idx}>
+                            <div className="relative flex items-center justify-center p-3.5">
+                                <h1
+                                    className={`text-sm font-medium ${
+                                        isToday
+                                            ? "font-extrabold text-indigo-600"
+                                            : "text-gray-900"
+                                    }`}
+                                >
+                                    {d.toLocaleDateString("en-NZ", {
+                                        month: "short",
+                                        day: "numeric",
+                                        weekday: "short",
+                                    })}
+                                </h1>
+                                {events[idx].map((e, idx2) => {
+                                    return (
+                                        <React.Fragment key={idx2}>
+                                            {createEvent(e)}
+                                        </React.Fragment>
+                                    );
+                                })}
+                            </div>
+                        </React.Fragment>
+                    );
+                })}
+            </>
         );
     };
 
@@ -157,32 +197,7 @@ const WeeklyTimetable = ({
                     <div>
                         <div className="grid h-full w-full grid-cols-[0.4fr_1fr_1fr_1fr_1fr_1fr] border-t border-gray-200">
                             <div></div>
-                            {weekdays.map((d, idx) => {
-                                const isToday = today.getTime() === d.getTime();
-
-                                return (
-                                    <React.Fragment key={idx}>
-                                        <div className="relative flex items-center justify-center p-3.5">
-                                            <h1
-                                                className={`text-sm font-medium ${
-                                                    isToday
-                                                        ? "font-extrabold text-indigo-600"
-                                                        : "text-gray-900"
-                                                }`}
-                                            >
-                                                {d.toLocaleDateString("en-NZ", {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                    weekday: "short",
-                                                })}
-                                            </h1>
-                                            {events[idx].map((e) => {
-                                                return createEvent(e);
-                                            })}
-                                        </div>
-                                    </React.Fragment>
-                                );
-                            })}
+                            <Weekdays />
 
                             <div
                                 ref={timeSlotsContainerRef}
