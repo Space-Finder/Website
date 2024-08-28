@@ -1,4 +1,6 @@
-export const PERIODS = [
+import { Period } from "../types/other";
+
+export const PERIODS: Period[][] = [
     [
         { start: "8:50", end: "10:20", type: "class", line: 1 },
         { start: "10:20", end: "10:40", type: "break" },
