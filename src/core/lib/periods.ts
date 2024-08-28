@@ -44,3 +44,34 @@ export const PERIODS: Period[][] = [
         { start: "14:00", end: "15:00", type: "custom", name: "TUTORIALS" },
     ],
 ];
+
+function parseTime(time: string): number {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+}
+
+export function findNextPeriod(
+    targetLine: number,
+): { dayIndex: number; startTime: string } | null {
+    const now = new Date();
+    const currentDayIndex = now.getDay() - 1; // Monday = 0, Sunday = 6
+    const currentTime = parseTime(`${now.getHours()}:${now.getMinutes()}`);
+
+    const days = PERIODS.length;
+
+    for (let i = 0; i < days; i++) {
+        const dayIndex = (currentDayIndex + i) % days;
+        const currentDay = PERIODS[dayIndex];
+
+        for (const period of currentDay) {
+            if (period.type === "class" && period.line === targetLine) {
+                const periodStartTime = parseTime(period.start);
+                if (i > 0 || periodStartTime > currentTime) {
+                    return { dayIndex, startTime: period.start };
+                }
+            }
+        }
+    }
+
+    return null;
+}
