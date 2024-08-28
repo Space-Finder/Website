@@ -69,11 +69,17 @@ async function getUser() {
 }
 
 async function setupTeacherAccount(email: string) {
-    // Logic to set up teacher account
-    // include rest of linking here
-
-    await prisma.user.update({
+    const user = await prisma.user.update({
         where: { email },
         data: { isTeacher: true },
+    });
+
+    await prisma.teacher.findUnique({
+        where: { email },
+    });
+
+    await prisma.teacher.update({
+        data: { userId: user.id },
+        where: { email },
     });
 }
