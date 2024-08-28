@@ -1,6 +1,7 @@
 import React from "react";
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
+import { formatTime } from "@/core/lib/time";
 import { findNextPeriod } from "@/core/lib/periods";
 
 const Dashboard = async () => {
@@ -8,14 +9,14 @@ const Dashboard = async () => {
 
     const teacher = await prisma.teacher.findUnique({
         where: { userId: s.user.id },
+        include: { user: true, classes: true },
     });
+
     if (!teacher) {
         throw Error("teacher not found");
     }
 
-    const classes = await prisma.course.findMany({
-        where: { teacherId: teacher.id },
-    });
+    const { classes } = teacher;
 
     const hour = new Date().getHours();
     const greeting =
@@ -47,7 +48,8 @@ const Dashboard = async () => {
                                     )[0].name
                                 }{" "}
                                 (Line: {c.line}), Next Class On:{" "}
-                                {days[next.dayIndex || 0]} {next.startTime}
+                                {days[next.dayIndex || 0]}{" "}
+                                {formatTime(next.startTime)}
                             </p>
                         </div>
                     );

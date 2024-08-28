@@ -5,33 +5,33 @@ import { auth } from "@/core/lib/auth";
 import WeeklyTimetable from "@/core/components/teachers/weeklyTimetable";
 
 const TeacherTimetable = async () => {
-    const s = (await auth())!;
+    const session = (await auth())!;
 
     const teacher = await prisma.teacher.findUnique({
-        where: { userId: s.user.id },
+        where: { userId: session.user.id },
+        include: { user: true, classes: true, common: true },
     });
 
     if (!teacher) {
-        throw Error("teacher not found");
+        throw Error("Teacher Not Found");
     }
 
-    const classes = await prisma.course.findMany({
-        where: { teacherId: teacher.id },
+    const { classes, common } = teacher;
+
+    const lineList = Array.from({ length: 6 }, (_, index) => {
+        const line = index + 1;
+        return classes.find((c) => c.line === line) || null;
     });
 
-    const lineList = [];
-    for (let line = 1; line <= 6; line++) {
-        const course = classes.filter((l) => l.line == line).at(0);
-        lineList.push(course || null);
-    }
+    const locations: Array<string[] | null> = [];
 
-    const common = await prisma.common.findUnique({
-        where: { id: teacher.commonId },
-    });
-
-    const locations = [];
-
-    return <WeeklyTimetable lineList={lineList} teacherCommon={common?.name!} />;
+    return (
+        <WeeklyTimetable
+            lineList={lineList}
+            teacherCommon={common.name}
+            locations={locations}
+        />
+    );
 };
 
 export default TeacherTimetable;
