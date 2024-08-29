@@ -1,16 +1,16 @@
 import { Period } from "@/core/types/other";
-import { Course } from "@prisma/client";
+import { Course, Common } from "@prisma/client";
 import { formatTime } from "@/core/lib/time";
 
 export const HOURS = 8;
 
 export const createEventFactory = (
     locations: ((string | null)[][] | null)[],
-    teacherCommon: string,
+    teacherCommon: Common,
     lineList: Array<Course | null>,
     timeSlotsHeight: number,
 ) => {
-    return (event: Period) => {
+    const TimetableEvent = ({ event }: { event: Period }) => {
         const [startHour, startMinute] = event.start.split(":");
         const [endHour, endMinute] = event.end.split(":");
 
@@ -49,18 +49,25 @@ export const createEventFactory = (
                     style={{
                         top: `${offset + pixels_per_hour}px`,
                         height: `${height - 3}px`,
+                        borderColor: teacherCommon.color || "#16a34a",
+                        backgroundColor: teacherCommon.color2 || "#f0fdf4",
                     }}
                     className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-green-600 bg-green-50 p-1.5"
                 >
                     <p className="text-xs font-semibold">{event.name}</p>
-                    <p className="mb-px text-xs font-bold text-green-900">
-                        {teacherCommon}
+                    <p
+                        style={{
+                            color: teacherCommon.color || "black",
+                        }}
+                        className={`mb-px text-xs font-bold`}
+                    >
+                        {teacherCommon.name}
                     </p>
                 </div>
             );
         }
 
-        const [location, common, color] =
+        const [location, common, color, color2] =
             locations[event.line - 1]![event.periodNumber - 1];
 
         return (
@@ -69,7 +76,7 @@ export const createEventFactory = (
                     top: `${offset + pixels_per_hour}px`,
                     height: `${height - 3}px`,
                     borderColor: color || "#60a5fa",
-                    backgroundColor: "#eff6ff", // update to color dependent on common
+                    backgroundColor: color2 || "#eff6ff",
                 }}
                 className={`absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 bg-blue-50 p-1.5`}
             >
@@ -86,4 +93,5 @@ export const createEventFactory = (
             </div>
         );
     };
+    return TimetableEvent;
 };

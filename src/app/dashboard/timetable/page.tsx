@@ -44,16 +44,17 @@ const TeacherTimetable = async () => {
     });
 
     const commons = await prisma.common.findMany();
-    const common_names: Map<string, [string, string | null]> = new Map();
+    const common_names: Map<string, [string, string | null, string | null]> =
+        new Map();
     for (const common of commons) {
-        common_names.set(common.id, [common.name, common.color]);
+        common_names.set(common.id, [common.name, common.color, common.color2]);
     }
 
     const locationList = Array.from({ length: 6 }, (_, index) => {
         const line = index + 1;
         const filteredBookings = bookings.filter((b) => b.course.line == line);
         if (filteredBookings.length == 0) {
-            return null; 
+            return null;
         }
         return filteredBookings.map((booking) => [
             booking.space.name,
@@ -64,7 +65,7 @@ const TeacherTimetable = async () => {
     return (
         <WeeklyTimetable
             lineList={lineList}
-            teacherCommon={common.name}
+            teacherCommon={common}
             locations={locationList}
         />
     );

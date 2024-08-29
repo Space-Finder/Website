@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-import { Course } from "@prisma/client";
 import { Period } from "@/core/types/other";
 import { PERIODS } from "@/core/lib/periods";
+import { Course, Common } from "@prisma/client";
 import { createEventFactory, HOURS } from "./event";
 import { formatTime, getWeekDays } from "@/core/lib/time";
 
@@ -20,7 +20,7 @@ const WeeklyTimetable = ({
     locations,
 }: {
     lineList: Array<Course | null>;
-    teacherCommon: string;
+    teacherCommon: Common;
     locations: ((string | null)[][] | null)[];
 }) => {
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ const WeeklyTimetable = ({
         ),
     );
 
-    const getEvent = createEventFactory(
+    const TimetableEvent = createEventFactory(
         locations,
         teacherCommon,
         lineList,
@@ -80,7 +80,7 @@ const WeeklyTimetable = ({
                                 {events[idx].map((event, event_index) => {
                                     return (
                                         <React.Fragment key={event_index}>
-                                            {getEvent(event)}
+                                            <TimetableEvent event={event} />
                                         </React.Fragment>
                                     );
                                 })}
