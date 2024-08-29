@@ -5,7 +5,7 @@ import { formatTime } from "@/core/lib/time";
 export const HOURS = 8;
 
 export const createEventFactory = (
-    locations: Array<string[] | null>,
+    locations: ((string | null)[][] | null)[],
     teacherCommon: string,
     lineList: Array<Course | null>,
     timeSlotsHeight: number,
@@ -60,19 +60,26 @@ export const createEventFactory = (
             );
         }
 
+        const [location, common, color] =
+            locations[event.line - 1]![event.periodNumber - 1];
+
         return (
             <div
                 style={{
                     top: `${offset + pixels_per_hour}px`,
                     height: `${height - 3}px`,
+                    borderColor: color || "#60a5fa",
+                    backgroundColor: "#eff6ff", // update to color dependent on common
                 }}
-                className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-blue-600 bg-blue-50 p-1.5"
+                className={`absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 bg-blue-50 p-1.5`}
             >
                 <p className="text-xs font-semibold">
                     {lineList[event.line - 1]?.name} - (
                     {lineList[event.line - 1]?.code})
                 </p>
-                <p className="mb-px text-xs font-normal text-gray-900">ee</p>
+                <p className="mb-px text-xs font-normal text-gray-900">
+                    {location} ({common!.slice(0, 4).toUpperCase()})
+                </p>
                 <p className="text-xs font-semibold text-blue-600">
                     {formatTime(event.start)} - {formatTime(event.end)}
                 </p>
