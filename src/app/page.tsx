@@ -1,11 +1,14 @@
+"use client";
+
 import Link from "next/link";
-import { auth, signIn } from "@/core/lib/auth";
+import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 const BACKGROUND_IMAGE = "/gradient.webp";
 
-export default async function Home() {
-    const session = await auth();
-    const signedIn = session && session.user !== null;
+export default function Home() {
+    const session = useSession();
+    const signedIn = session.status === "authenticated";
 
     return (
         <div>
@@ -41,19 +44,12 @@ export default async function Home() {
                                 Go To Dashboard
                             </Link>
                         ) : (
-                            <form
-                                action={async () => {
-                                    "use server";
-                                    await signIn("google");
-                                }}
+                            <button
+                                onClick={() => signIn("google")}
+                                className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
                             >
-                                <button
-                                    type="submit"
-                                    className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
-                                >
-                                    Login
-                                </button>
-                            </form>
+                                Login
+                            </button>
                         )}
                     </div>
                     <p className="text-lg uppercase tracking-[0.15em] text-[#72563E]">
