@@ -55,14 +55,38 @@ export const createEventFactory = (
                     className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-green-600 bg-green-50 p-1.5"
                 >
                     <p className="text-xs font-semibold">{event.name}</p>
-                    <p
-                        style={{
-                            color: teacherCommon.color || "black",
-                        }}
-                        className={`mb-px text-xs font-bold`}
-                    >
-                        {teacherCommon.name}
-                    </p>
+
+                    {event.name !== "LA" ? (
+                        <>
+                            <p
+                                style={{
+                                    color: teacherCommon.color || "black",
+                                }}
+                                className={`mb-px text-xs font-bold`}
+                            >
+                                {teacherCommon.name}
+                            </p>
+                            <p
+                                style={{
+                                    color: teacherCommon.color || "black",
+                                }}
+                                className="text-xs font-semibold"
+                            >
+                                {formatTime(event.start)} -{" "}
+                                {formatTime(event.end)}
+                            </p>
+                        </>
+                    ) : (
+                        <p
+                            style={{
+                                color: teacherCommon.color || "black",
+                            }}
+                            className="text-xs font-semibold"
+                        >
+                            {formatTime(event.start)} - {formatTime(event.end)}{" "}
+                            ({teacherCommon.name.slice(0, 4).toUpperCase()})
+                        </p>
+                    )}
                 </div>
             );
         }
@@ -87,7 +111,12 @@ export const createEventFactory = (
                 <p className="mb-px text-xs font-normal text-gray-900">
                     {location} ({common!.slice(0, 4).toUpperCase()})
                 </p>
-                <p className="text-xs font-semibold text-blue-600">
+                <p
+                    style={{
+                        color: color || "#2563eb",
+                    }}
+                    className="text-xs font-semibold"
+                >
                     {formatTime(event.start)} - {formatTime(event.end)}
                 </p>
             </div>
