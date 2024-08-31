@@ -25,18 +25,15 @@ const Navbar = () => {
                         className="h-7 w-auto"
                     />
                 </div>
-                <form
-                    action={async () => {
+
+                <button
+                    onClick={() => {
                         signedIn ? signOut() : signIn("google");
                     }}
+                    className="rounded-xl bg-[#0B1328] px-14 py-3 text-xl text-white"
                 >
-                    <button
-                        type="submit"
-                        className="rounded-xl bg-[#0B1328] px-14 py-3 text-xl text-white"
-                    >
-                        {signedIn ? "Logout" : "Login"}
-                    </button>
-                </form>
+                    {signedIn ? "Logout" : "Login"}
+                </button>
             </div>
         </nav>
     );
