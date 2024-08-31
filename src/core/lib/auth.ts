@@ -5,11 +5,7 @@ import prisma from "@/core/db/orm";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
 const SIGN_IN_URL = "/login";
-const NEW_USER_URL = "/";
-
-// impersonation commands:
-// update users set is_onboarded=false, email='hprasad@ormiston.school.nz', is_teacher=false where email='st22209@ormiston.school.nz';
-// update users set is_onboarded=false, email='gsheppard@ormiston.school.nz', is_teacher=false where email='st22209@ormiston.school.nz';
+const NEW_USER_URL = "/onboarding";
 
 export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
 export const SCHOOL_DOMAIN = "ormiston.school.nz";
