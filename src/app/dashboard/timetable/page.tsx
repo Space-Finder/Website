@@ -23,7 +23,7 @@ const TeacherTimetable = async () => {
         return classes.find((c) => c.line === line) || null;
     });
 
-    const URL = `${process.env.API_URL}/api/week`;
+    const URL = `${process.env.NEXT_PUBLIC_API_URL}/api/week`;
     let data: {
         success: boolean;
         week: number;
