@@ -91,8 +91,11 @@ export const createEventFactory = (
             );
         }
 
+        const event_location_data = locations[event.line - 1];
         const [location, common, color, color2] =
-            locations[event.line - 1]![event.periodNumber - 1];
+            event_location_data && event_location_data[event.periodNumber - 1]
+                ? event_location_data[event.periodNumber - 1]
+                : ["Unset", "Unknown", "", ""];
 
         return (
             <div
