@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Dialog from "@radix-ui/react-dialog";
+import * as Dialog from "@radix-ui/react-dialog";
 import { toast, ToastContainer } from "react-toastify";
 
 import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
