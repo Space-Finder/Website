@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
+import Dialog from "@radix-ui/react-dialog";
 import { toast, ToastContainer } from "react-toastify";
 
 import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
@@ -86,7 +86,6 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                 params: { teacher_id: teacherId },
             },
         );
-        console.log(response.data);
         setExistingBookings(
             response.data.filter(
                 (booking: Booking) => booking.course.id === course_id,
@@ -109,7 +108,6 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                 },
             },
         );
-        console.log(response.data);
         setAvailableSpaces(response.data);
     }
 
