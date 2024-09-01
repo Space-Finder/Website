@@ -162,7 +162,13 @@ export function findNextPeriod(
     targetLine: number,
 ): { dayIndex: number; startTime: string } | null {
     const now = new Date();
-    const currentDayIndex = now.getDay() - 1; // Monday = 0, Sunday = 6
+    let currentDayIndex = now.getDay() - 1; // monday = 0, friday = 4
+
+    // if its the weekend, use friday for next weeks calculations
+    if (currentDayIndex < 0 || currentDayIndex > 4) {
+        currentDayIndex = 4;
+    }
+
     const currentTime = parseTime(`${now.getHours()}:${now.getMinutes()}`);
 
     const days = PERIODS.length;
