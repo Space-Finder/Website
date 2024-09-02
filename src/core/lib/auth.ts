@@ -4,12 +4,13 @@ import NextAuth, { type NextAuthConfig } from "next-auth";
 import prisma from "@/core/db/orm";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
+const inDevelopmentMode = process.env.NODE_ENV == "development";
+
 const SIGN_IN_URL = "/login";
-const NEW_USER_URL = "/onboarding";
+const NEW_USER_URL = inDevelopmentMode ? "/" : "/onboarding";
 
 export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
 export const SCHOOL_DOMAIN = "ormiston.school.nz";
-const inDevelopmentMode = process.env.NODE_ENV == "development";
 
 const GOOGLE_AUTHORIZATION_URL = {
     params: {
