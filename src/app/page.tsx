@@ -1,15 +1,10 @@
-"use client";
+import React from "react";
 
-import Link from "next/link";
-import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
+import HomepageButton from "@/core/components/homepageButton";
 
 const BACKGROUND_IMAGE = "/gradient.webp";
 
 export default function Home() {
-    const session = useSession();
-    const signedIn = session.status === "authenticated";
-
     return (
         <div>
             <main className="h-[calc(100vh-9rem)] font-poppins">
@@ -36,21 +31,7 @@ export default function Home() {
                                 place
                             </span>
                         </h1>
-                        {signedIn ? (
-                            <Link
-                                className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
-                                href="/dashboard"
-                            >
-                                Go To Dashboard
-                            </Link>
-                        ) : (
-                            <button
-                                onClick={() => signIn("google")}
-                                className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
-                            >
-                                Login
-                            </button>
-                        )}
+                        <HomepageButton />
                     </div>
                     <p className="text-lg uppercase tracking-[0.15em] text-[#72563E]">
                         Classroom allocation made simple
