@@ -153,6 +153,36 @@ export const PERIODS: Period[][] = [
     ],
 ];
 
+export function findTime(
+    line: number,
+    period: number,
+): { day: string; start: string; end: string } | null {
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+    for (let dayIndex = 0; dayIndex < PERIODS.length; dayIndex++) {
+        const periods = PERIODS[dayIndex];
+
+        for (let i = 0; i < periods.length; i++) {
+            const currentPeriod = periods[i];
+
+            // Check if the current period matches the line and periodNumber
+            if (
+                currentPeriod.type == "class" &&
+                currentPeriod.line === line &&
+                currentPeriod.periodNumber === period
+            ) {
+                return {
+                    day: days[dayIndex],
+                    start: currentPeriod.start,
+                    end: currentPeriod.end,
+                };
+            }
+        }
+    }
+
+    return null;
+}
+
 function parseTime(time: string): number {
     const [hours, minutes] = time.split(":").map(Number);
     return hours * 60 + minutes;
