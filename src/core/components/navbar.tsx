@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { signIn, signOut } from "next-auth/react";
+import Image from "next/image";
+import { signIn, signOut, useSession } from "next-auth/react";
+
+import Logo from "/public/spacelogo.png";
 
 const Navbar = () => {
     const session = useSession();
@@ -17,13 +18,7 @@ const Navbar = () => {
                     <Link href="/" className="text-2xl">
                         SpaceFinder
                     </Link>
-                    <Image
-                        src="/spacelogo.png"
-                        alt="logo"
-                        width={28}
-                        height={24}
-                        className="h-7 w-auto"
-                    />
+                    <Image src={Logo} alt="logo" className="h-7 w-auto" />
                 </div>
 
                 <button
