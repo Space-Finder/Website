@@ -18,7 +18,12 @@ const Navbar = () => {
                     <Link href="/" className="text-2xl">
                         SpaceFinder
                     </Link>
-                    <Image src={Logo} alt="logo" className="h-7 w-auto" />
+                    <Image
+                        src={Logo}
+                        alt="logo"
+                        className="h-7 w-auto"
+                        placeholder="blur"
+                    />
                 </div>
 
                 <button
