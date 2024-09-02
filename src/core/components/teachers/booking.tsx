@@ -1,9 +1,9 @@
 "use client";
 
 import axios from "axios";
+import { toast} from "react-toastify";
 import { useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { toast, ToastContainer } from "react-toastify";
 
 import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
 
@@ -280,7 +280,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </div>
     );
 }
