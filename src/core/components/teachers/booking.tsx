@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { toast} from "react-toastify";
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 
@@ -172,7 +172,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                     </option>
                     {classes.map((cls) => (
                         <option key={cls.id} value={cls.id}>
-                            {cls.name}
+                            {cls.name} ({cls.code})
                         </option>
                     ))}
                 </select>
