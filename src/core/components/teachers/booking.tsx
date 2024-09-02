@@ -4,8 +4,10 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-
 import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
+
+import { formatTime } from "@/core/lib/time";
+import { findTime } from "@/core/lib/periods";
 
 interface BookingTodo {
     period_number: number;
@@ -186,19 +188,42 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                         </h2>
                         {existingBookings.length > 0 ? (
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {existingBookings.map((booking, index) => (
-                                    <div
-                                        key={index}
-                                        className="rounded-lg border bg-white p-4 shadow-lg"
-                                    >
-                                        <h3 className="text-md mb-2 font-semibold">
-                                            Period {booking.periodNumber}
-                                        </h3>
-                                        <p className="text-sm text-gray-700">
-                                            Booked in: {booking.space.name}
-                                        </p>
-                                    </div>
-                                ))}
+                                {existingBookings.map((booking, index) => {
+                                    const periodTime = findTime(
+                                        booking.course.line,
+                                        booking.periodNumber,
+                                    );
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="rounded-lg border bg-white p-4 shadow-lg"
+                                        >
+                                            <h3 className="text-md mb-2 font-semibold">
+                                                {periodTime ? (
+                                                    <>
+                                                        {periodTime.day}{" "}
+                                                        {formatTime(
+                                                            periodTime.start,
+                                                        )}
+                                                        -
+                                                        {formatTime(
+                                                            periodTime.end,
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Period{" "}
+                                                        {booking.periodNumber}
+                                                    </>
+                                                )}
+                                            </h3>
+                                            <p className="text-sm text-gray-700">
+                                                Booked in: {booking.space.name}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         ) : (
                             <p>
@@ -213,30 +238,53 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                         </h2>
                         {bookingsTodo.length > 0 ? (
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {bookingsTodo.map((todo, index) => (
-                                    <div
-                                        key={index}
-                                        className="rounded-lg border bg-white p-4 shadow-lg"
-                                    >
-                                        <h3 className="text-md mb-2 font-semibold">
-                                            Period {todo.period_number}
-                                        </h3>
-                                        <button
-                                            className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                                            onClick={() => {
-                                                setSelectedTodo(todo);
-                                                fetchAvailableSpaces(
-                                                    todo.period_number,
-                                                    selectedClass.commonId,
-                                                    todo.line,
-                                                );
-                                                setIsDialogOpen(true);
-                                            }}
+                                {bookingsTodo.map((todo, index) => {
+                                    const periodTime = findTime(
+                                        todo.line,
+                                        todo.period_number,
+                                    );
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="rounded-lg border bg-white p-4 shadow-lg"
                                         >
-                                            Select Space
-                                        </button>
-                                    </div>
-                                ))}
+                                            <h3 className="text-md mb-2 font-semibold">
+                                                {periodTime ? (
+                                                    <>
+                                                        {periodTime.day}{" "}
+                                                        {formatTime(
+                                                            periodTime.start,
+                                                        )}
+                                                        -
+                                                        {formatTime(
+                                                            periodTime.end,
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Period{" "}
+                                                        {todo.period_number}
+                                                    </>
+                                                )}
+                                            </h3>
+                                            <button
+                                                className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                                                onClick={() => {
+                                                    setSelectedTodo(todo);
+                                                    fetchAvailableSpaces(
+                                                        todo.period_number,
+                                                        selectedClass.commonId,
+                                                        todo.line,
+                                                    );
+                                                    setIsDialogOpen(true);
+                                                }}
+                                            >
+                                                Select Space
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         ) : (
                             <p>All periods for this class have been booked.</p>
@@ -280,7 +328,6 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                     </Dialog.Content>
                 </Dialog.Portal>
             </Dialog.Root>
-            {/* <ToastContainer /> */}
         </div>
     );
 }
