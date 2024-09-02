@@ -134,7 +134,6 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
             fetchBookingsTodo(selectedTodo.course_id);
             fetchExistingBookings(selectedTodo.course_id);
             setSelectedSpace(null);
-            setSelectedClass(null);
             setIsDialogOpen(false);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 409) {
