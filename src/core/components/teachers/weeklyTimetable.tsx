@@ -118,12 +118,12 @@ const WeeklyTimetable = ({
                             </h6>
                         </div>
                         <div className="flex items-center gap-px rounded-lg bg-gray-100 p-1">
-                            {/* <button className="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600">
-                                Day
-                            </button> */}
                             <button className="rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-indigo-600 transition-all duration-300 hover:bg-white hover:text-indigo-600">
                                 Week
                             </button>
+                            {/* <button className="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600">
+                                Next Week
+                            </button> */}
                         </div>
                     </div>
                     <div>
