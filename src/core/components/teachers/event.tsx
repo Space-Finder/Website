@@ -23,7 +23,7 @@ export const createEventFactory = (
                 <div
                     style={{
                         top: `${offset}px`,
-                        height: `${height - 3}px`,
+                        height: `${height}px`,
                     }}
                     className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-orange-600 bg-orange-50 p-1.5"
                 >
@@ -42,7 +42,7 @@ export const createEventFactory = (
                 <div
                     style={{
                         top: `${offset}px`,
-                        height: `${height - 3}px`,
+                        height: `${height}px`,
                         borderColor: teacherCommon.color || "#16a34a",
                         backgroundColor: teacherCommon.color2 || "#f0fdf4",
                     }}
@@ -95,7 +95,7 @@ export const createEventFactory = (
             <div
                 style={{
                     top: `${offset}px`,
-                    height: `${height - 3}px`,
+                    height: `${height}px`,
                     borderColor: color || "#60a5fa",
                     backgroundColor: color2 || "#eff6ff",
                 }}
