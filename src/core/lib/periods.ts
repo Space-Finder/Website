@@ -1,5 +1,7 @@
 import { Period } from "../types/other";
 
+export const numberOfLines = 6;
+
 export const PERIODS: Period[][] = [
     [
         {

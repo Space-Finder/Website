@@ -2,6 +2,7 @@ import React from "react";
 
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
+import { numberOfLines } from "@/core/lib/periods";
 import WeeklyTimetable from "@/core/components/teachers/weeklyTimetable";
 
 const TeacherTimetable = async () => {
@@ -18,7 +19,7 @@ const TeacherTimetable = async () => {
 
     const { classes, common } = teacher;
 
-    const lineList = Array.from({ length: 6 }, (_, index) => {
+    const lineList = Array.from({ length: numberOfLines }, (_, index) => {
         const line = index + 1;
         return classes.find((c) => c.line === line) || null;
     });
@@ -44,8 +45,7 @@ const TeacherTimetable = async () => {
     });
 
     const commons = await prisma.common.findMany();
-    const common_names: Map<string, [string, string | null, string | null]> =
-        new Map();
+    const common_names: Map<string, [string, string, string]> = new Map();
     for (const common of commons) {
         common_names.set(common.id, [common.name, common.color, common.color2]);
     }
