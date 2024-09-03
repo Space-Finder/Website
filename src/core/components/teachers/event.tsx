@@ -3,51 +3,45 @@ import { Course, Common } from "@prisma/client";
 import { formatTime } from "@/core/lib/time";
 
 export const HOURS = 8;
+type Locations = ((string | null)[][] | null)[];
 
 export const createEventFactory = (
-    locations: ((string | null)[][] | null)[],
+    locations: Locations,
     teacherCommon: Common,
     lineList: Array<Course | null>,
-    timeSlotsHeight: number,
+    totalHeight: number, // the height of the timetable
 ) => {
     const TimetableEvent = ({ event }: { event: Period }) => {
-        const [startHour, startMinute] = event.start.split(":");
-        const [endHour, endMinute] = event.end.split(":");
-
-        const pixels_per_hour = timeSlotsHeight / HOURS;
-
-        const offset =
-            (Number(startHour) + Number(startMinute) / 60 - HOURS) *
-            pixels_per_hour;
-
-        const endOffset =
-            (Number(endHour) + Number(endMinute) / 60 - HOURS) *
-            pixels_per_hour;
-
-        const height = endOffset - offset;
+        const [offset, height] = eventLocation(
+            event.start,
+            event.end,
+            totalHeight,
+        );
 
         if (event.type == "break") {
             return (
                 <div
                     style={{
-                        top: `${offset + pixels_per_hour}px`,
+                        top: `${offset}px`,
                         height: `${height - 3}px`,
                     }}
                     className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-orange-600 bg-orange-50 p-1.5"
                 >
                     <p className="text-xs font-semibold">Break</p>
-                    {Number(startHour) !== 10 && (
+                    {!event.start.startsWith("10") && (
                         <p className="text-xs font-semibold text-orange-600">
                             {formatTime(event.start)} - {formatTime(event.end)}
                         </p>
                     )}
                 </div>
             );
-        } else if (event.type == "custom") {
+        }
+
+        if (event.type == "custom") {
             return (
                 <div
                     style={{
-                        top: `${offset + pixels_per_hour}px`,
+                        top: `${offset}px`,
                         height: `${height - 3}px`,
                         borderColor: teacherCommon.color || "#16a34a",
                         backgroundColor: teacherCommon.color2 || "#f0fdf4",
@@ -100,7 +94,7 @@ export const createEventFactory = (
         return (
             <div
                 style={{
-                    top: `${offset + pixels_per_hour}px`,
+                    top: `${offset}px`,
                     height: `${height - 3}px`,
                     borderColor: color || "#60a5fa",
                     backgroundColor: color2 || "#eff6ff",
@@ -127,3 +121,28 @@ export const createEventFactory = (
     };
     return TimetableEvent;
 };
+
+function eventLocation(
+    start: string,
+    end: string,
+    totalHeight: number,
+): [number, number] {
+    const MARGIN = 3;
+
+    const [startHour, startMinute] = start.split(":");
+    const [endHour, endMinute] = end.split(":");
+
+    const pixels_per_hour = totalHeight / HOURS;
+
+    const offset =
+        (parseInt(startHour) + parseInt(startMinute) / 60 - HOURS) *
+        pixels_per_hour;
+
+    const endOffset =
+        (parseInt(endHour) + parseInt(endMinute) / 60 - HOURS) *
+        pixels_per_hour;
+
+    const height = endOffset - offset - MARGIN;
+
+    return [offset + pixels_per_hour, height];
+}
