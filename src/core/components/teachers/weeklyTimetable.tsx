@@ -21,7 +21,7 @@ const WeeklyTimetable = ({
 }: {
     lineList: Array<Course | null>;
     teacherCommon: Common;
-    locations: ((string | null)[][] | null)[];
+    locations: (string[][] | null)[];
 }) => {
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
     const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0);
