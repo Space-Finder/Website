@@ -2,10 +2,10 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-import { Period } from "@/core/types/other";
 import { PERIODS } from "@/core/lib/periods";
 import { Course, Common } from "@prisma/client";
 import { createEventFactory, HOURS } from "./event";
+import { Period, Locations } from "@/core/types/other";
 import { formatTime, getWeekDays } from "@/core/lib/time";
 
 const DATE_FORMAT_OPTIONS = {
@@ -21,7 +21,7 @@ const WeeklyTimetable = ({
 }: {
     lineList: Array<Course | null>;
     teacherCommon: Common;
-    locations: (string[][] | null)[];
+    locations: Locations;
 }) => {
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
     const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0);

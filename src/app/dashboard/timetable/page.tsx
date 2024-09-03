@@ -2,6 +2,7 @@ import React from "react";
 
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
+import { Locations } from "@/core/types/other";
 import { numberOfLines } from "@/core/lib/periods";
 import WeeklyTimetable from "@/core/components/teachers/weeklyTimetable";
 
@@ -50,7 +51,7 @@ const TeacherTimetable = async () => {
         common_names.set(common.id, [common.name, common.color, common.color2]);
     }
 
-    const locationList = Array.from({ length: 6 }, (_, index) => {
+    const locationList: Locations = Array.from({ length: 6 }, (_, index) => {
         const line = index + 1;
         const filteredBookings = bookings.filter((b) => b.course.line == line);
         if (filteredBookings.length == 0) {

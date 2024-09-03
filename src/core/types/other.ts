@@ -10,3 +10,5 @@ export type Period = {
     | { type: "break" }
     | { type: "custom"; name: string }
 );
+
+export type Locations = (string[][] | null)[];

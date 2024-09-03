@@ -1,9 +1,8 @@
-import { Period } from "@/core/types/other";
-import { Course, Common } from "@prisma/client";
 import { formatTime } from "@/core/lib/time";
+import { Course, Common } from "@prisma/client";
+import { Period, Locations } from "@/core/types/other";
 
 export const HOURS = 8;
-type Locations = (string[][] | null)[];
 
 export const createEventFactory = (
     locations: Locations,
