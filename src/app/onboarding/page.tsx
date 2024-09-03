@@ -1,6 +1,8 @@
-import { auth } from "@/core/lib/auth";
-import prisma from "@/core/db/orm";
 import { redirect } from "next/navigation";
+
+import prisma from "@/core/db/orm";
+import { auth } from "@/core/lib/auth";
+import { APIRequestIssue } from "@/core/lib/error";
 
 export default async function Onboarding() {
     const user = await getUser();
@@ -31,7 +33,7 @@ async function isTeacher(email: string) {
     try {
         const response = await fetch(URL);
         if (!response.ok) {
-            throw new Error("There was some issue");
+            throw new APIRequestIssue(null);
         }
         const data: {
             success: boolean;
@@ -39,8 +41,8 @@ async function isTeacher(email: string) {
         } = await response.json();
 
         return data.isTeacher;
-    } catch {
-        throw new Error("API down");
+    } catch (err) {
+        throw new APIRequestIssue(err);
     }
 }
 
