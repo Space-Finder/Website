@@ -3,7 +3,7 @@ import { Course, Common } from "@prisma/client";
 import { formatTime } from "@/core/lib/time";
 
 export const HOURS = 8;
-type Locations = ((string | null)[][] | null)[];
+type Locations = ((string)[][] | null)[];
 
 export const createEventFactory = (
     locations: Locations,
@@ -12,7 +12,7 @@ export const createEventFactory = (
     totalHeight: number, // the height of the timetable
 ) => {
     const TimetableEvent = ({ event }: { event: Period }) => {
-        const [offset, height] = eventLocation(
+        const eventPositionCSS = eventLocationCSS(
             event.start,
             event.end,
             totalHeight,
@@ -21,10 +21,7 @@ export const createEventFactory = (
         if (event.type == "break") {
             return (
                 <div
-                    style={{
-                        top: `${offset}px`,
-                        height: `${height}px`,
-                    }}
+                    style={eventPositionCSS}
                     className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-orange-600 bg-orange-50 p-1.5"
                 >
                     <p className="text-xs font-semibold">Break</p>
@@ -41,10 +38,9 @@ export const createEventFactory = (
             return (
                 <div
                     style={{
-                        top: `${offset}px`,
-                        height: `${height}px`,
-                        borderColor: teacherCommon.color || "#16a34a",
-                        backgroundColor: teacherCommon.color2 || "#f0fdf4",
+                        ...eventPositionCSS,
+                        borderColor: teacherCommon.color,
+                        backgroundColor: teacherCommon.color2,
                     }}
                     className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-green-600 bg-green-50 p-1.5"
                 >
@@ -54,7 +50,7 @@ export const createEventFactory = (
                         <>
                             <p
                                 style={{
-                                    color: teacherCommon.color || "black",
+                                    color: teacherCommon.color,
                                 }}
                                 className={`mb-px text-xs font-bold`}
                             >
@@ -62,7 +58,7 @@ export const createEventFactory = (
                             </p>
                             <p
                                 style={{
-                                    color: teacherCommon.color || "black",
+                                    color: teacherCommon.color,
                                 }}
                                 className="text-xs font-semibold"
                             >
@@ -73,7 +69,7 @@ export const createEventFactory = (
                     ) : (
                         <p
                             style={{
-                                color: teacherCommon.color || "black",
+                                color: teacherCommon.color,
                             }}
                             className="text-xs font-semibold"
                         >
@@ -94,10 +90,9 @@ export const createEventFactory = (
         return (
             <div
                 style={{
-                    top: `${offset}px`,
-                    height: `${height}px`,
-                    borderColor: color || "#60a5fa",
-                    backgroundColor: color2 || "#eff6ff",
+                    ...eventPositionCSS,
+                    borderColor: color,
+                    backgroundColor: color2,
                 }}
                 className={`absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 bg-blue-50 p-1.5`}
             >
@@ -122,11 +117,14 @@ export const createEventFactory = (
     return TimetableEvent;
 };
 
-function eventLocation(
+function eventLocationCSS(
     start: string,
     end: string,
     totalHeight: number,
-): [number, number] {
+): {
+    top: string;
+    height: string;
+} {
     const MARGIN = 3;
 
     const [startHour, startMinute] = start.split(":");
@@ -144,5 +142,8 @@ function eventLocation(
 
     const height = endOffset - offset - MARGIN;
 
-    return [offset + pixels_per_hour, height];
+    return {
+        top: `${offset}px`,
+        height: `${height}px`,
+    };
 }
