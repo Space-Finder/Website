@@ -40,10 +40,19 @@ export default function GlobalError({
                     <h1 className="mt-3 text-2xl font-semibold text-gray-800 dark:text-white md:text-3xl">
                         Oops! Something went wrong
                     </h1>
-                    <p className="mt-4 text-gray-500 dark:text-gray-400">
-                        {error.name}
-                        <br /> {error.message}
-                    </p>
+
+                    <div>
+                        <p className="font-bold">
+                            Error Type:{" "}
+                            <span className="text-red-500">
+                                {error.name} ({error.digest})
+                            </span>
+                        </p>
+                        <p className="mt-4 text-gray-500 dark:text-gray-400">
+                            <span className="font-bold">Message:</span>{" "}
+                            {error.message}
+                        </p>
+                    </div>
 
                     <div className="mt-6 flex w-full shrink-0 items-center gap-x-3 sm:w-auto">
                         <button
