@@ -25,28 +25,15 @@ const TeacherTimetable = async () => {
 
     const { classes, common } = teacher;
 
+    const week = await getWeek();
+
     const lineList = Array.from({ length: numberOfLines }, (_, index) => {
         const line = index + 1;
         return classes.find((c) => c.line === line) || null;
     });
 
-    const URL = `${process.env.NEXT_PUBLIC_API_URL}/api/week`;
-    let data: {
-        success: boolean;
-        week: number;
-    };
-    try {
-        const response = await fetch(URL);
-        if (!response.ok) {
-            throw new APIRequestError();
-        }
-        data = await response.json();
-    } catch (err) {
-        throw new APIDown();
-    }
-
     const bookings = await prisma.booking.findMany({
-        where: { teacherId: teacher.id, week: data.week },
+        where: { teacherId: teacher.id, week },
         include: { space: true, course: true },
     });
 
@@ -81,5 +68,23 @@ const TeacherTimetable = async () => {
         />
     );
 };
+
+async function getWeek() {
+    const URL = `${process.env.NEXT_PUBLIC_API_URL}/api/week`;
+    let data: {
+        success: boolean;
+        week: number;
+    };
+    try {
+        const response = await fetch(URL);
+        if (!response.ok) {
+            throw new APIRequestError();
+        }
+        data = await response.json();
+    } catch (err) {
+        throw new APIDown();
+    }
+    return data.week;
+}
 
 export default TeacherTimetable;
