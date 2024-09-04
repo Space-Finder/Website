@@ -94,7 +94,7 @@ export const createEventFactory = (
                     borderColor: primaryColor,
                     backgroundColor: secondaryColor,
                 }}
-                className="absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 border-blue-600 bg-blue-50 p-1.5"
+                className="border-black-600 absolute left-0 right-0 z-10 mx-[0.1rem] rounded border-l-2 bg-gray-50 p-1.5"
             >
                 <p className="text-xs font-semibold">
                     {course.name} - ({course.code})
