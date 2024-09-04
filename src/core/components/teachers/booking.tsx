@@ -153,12 +153,12 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="mb-4 text-2xl font-bold">
+        <div className="container mx-auto p-6">
+            <h1 className="mb-6 text-3xl font-extrabold text-gray-800">
                 Book Your Classes for Next Week
             </h1>
 
-            <div className="mb-6">
+            <div>
                 <h2 className="mb-2 text-lg font-semibold">Select a Class</h2>
 
                 <Select.Root
@@ -174,7 +174,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                         }
                     }}
                 >
-                    <Select.Trigger className="flex w-full items-center justify-between rounded border p-2">
+                    <Select.Trigger className="flex w-full items-center justify-between rounded border border-gray-300 bg-white p-3 shadow-sm hover:bg-gray-100 focus:ring-2 focus:ring-blue-500">
                         <Select.Value placeholder="Select a class..." />
                         <Select.Icon>
                             <ChevronDownIcon />
@@ -182,7 +182,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                     </Select.Trigger>
 
                     <Select.Portal>
-                        <Select.Content className="rounded bg-white shadow-lg">
+                        <Select.Content className="rounded border border-gray-200 bg-white shadow-lg">
                             <Select.ScrollUpButton className="flex items-center justify-center p-1">
                                 <ChevronUpIcon />
                             </Select.ScrollUpButton>
@@ -216,12 +216,12 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
 
             {selectedClass && (
                 <>
-                    <div className="mb-6">
+                    <div className="my-8">
                         <h2 className="mb-2 text-lg font-semibold">
                             Periods Already Booked
                         </h2>
                         {existingBookings.length > 0 ? (
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 {existingBookings.map((booking, index) => {
                                     const periodTime = findTime(
                                         booking.course.line,
@@ -231,7 +231,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                                     return (
                                         <div
                                             key={index}
-                                            className="rounded-lg border bg-white p-4 shadow-lg"
+                                            className="rounded-lg border bg-white p-4 shadow-md transition-shadow hover:shadow-lg"
                                         >
                                             <h3 className="text-md mb-2 font-semibold">
                                                 {periodTime ? (
@@ -338,7 +338,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                             {availableSpaces.map((space) => (
                                 <li
                                     key={space.id}
-                                    className={`cursor-pointer rounded border p-2 ${selectedSpace === space.id ? "bg-green-100" : "bg-white"}`}
+                                    className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100 hover:bg-green-100" : "bg-white"}`}
                                     onClick={() => setSelectedSpace(space.id)}
                                 >
                                     {space.name}
