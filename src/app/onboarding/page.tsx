@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
-import { APIRequestIssue } from "@/core/lib/error";
+import { APIDown, APIRequestError } from "@/core/lib/error";
 
 export default async function Onboarding() {
     const user = await getUser();
@@ -33,7 +33,7 @@ async function isTeacher(email: string) {
     try {
         const response = await fetch(URL);
         if (!response.ok) {
-            throw new APIRequestIssue(null);
+            throw new APIDown();
         }
         const data: {
             success: boolean;
@@ -42,7 +42,7 @@ async function isTeacher(email: string) {
 
         return data.isTeacher;
     } catch (err) {
-        throw new APIRequestIssue(err);
+        throw new APIRequestError(err);
     }
 }
 

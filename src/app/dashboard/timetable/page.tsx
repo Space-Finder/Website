@@ -4,7 +4,11 @@ import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
 import { Locations } from "@/core/types/other";
 import { numberOfLines } from "@/core/lib/periods";
-import { UnableToFetchTeacher } from "@/core/lib/error";
+import {
+    UnableToFetchTeacher,
+    APIRequestError,
+    APIDown,
+} from "@/core/lib/error";
 import WeeklyTimetable from "@/core/components/teachers/weeklyTimetable";
 
 const TeacherTimetable = async () => {
@@ -34,11 +38,11 @@ const TeacherTimetable = async () => {
     try {
         const response = await fetch(URL);
         if (!response.ok) {
-            throw new APIRequestIssue(null);
+            throw new APIDown();
         }
         data = await response.json();
     } catch (err) {
-        throw new APIRequestIssue(err);
+        throw new APIRequestError(err);
     }
 
     const bookings = await prisma.booking.findMany({
