@@ -11,6 +11,7 @@ import {
     ChevronDownIcon,
     ChevronUpIcon,
 } from "@radix-ui/react-icons";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 
 import { formatTime } from "@/core/lib/time";
 import { findTime } from "@/core/lib/periods";
@@ -43,6 +44,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
     const [availableSpaces, setAvailableSpaces] = useState<Space[]>([]);
     const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
 
+    const [showAlert, setShowAlert] = useState(false);
     const [selectedClass, setSelectedClass] = useState<Course | null>(null);
     const [selectedSpace, setSelectedSpace] = useState<string | null>(null);
 
@@ -151,6 +153,31 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
             }
         }
     }
+
+    const handleBookingAttempt = () => {
+        // if they have already booked the space another time that week
+        // just confirm with them, that they are SURE they wanna be using that space again
+        console.log(
+            selectedTodo?.course_id!,
+            selectedTodo?.line!,
+            selectedTodo?.period_number,
+        );
+
+        const alreadyBookedSpace = existingBookings.find(
+            (b) => b.space.id == selectedSpace,
+        );
+
+        if (alreadyBookedSpace) {
+            return setShowAlert(true);
+        }
+
+        setShowAlert(false);
+        handleMakeBooking();
+    };
+
+    const handleAlertClose = () => {
+        setShowAlert(false);
+    };
 
     return (
         <div className="container mx-auto p-6">
@@ -338,7 +365,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                             {availableSpaces.map((space) => (
                                 <li
                                     key={space.id}
-                                    className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100 hover:bg-green-100" : "bg-white"}`}
+                                className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100 hover:bg-green-100" : "bg-white"}`}
                                     onClick={() => setSelectedSpace(space.id)}
                                 >
                                     {space.name}
@@ -346,15 +373,77 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                             ))}
                         </ul>
                         <div className="mt-6 flex justify-end">
-                            <button
-                                className="mr-2 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                                onClick={handleMakeBooking}
-                                disabled={!selectedSpace}
-                            >
-                                Book Space
-                            </button>
+                            {showAlert ? (
+                                <AlertDialog.Root
+                                    open={showAlert}
+                                    onOpenChange={handleAlertClose}
+                                >
+                                    <AlertDialog.Trigger asChild>
+                                        <button
+                                            className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                                            disabled={!selectedSpace}
+                                        >
+                                            Book Space
+                                        </button>
+                                    </AlertDialog.Trigger>
+                                    <AlertDialog.Portal>
+                                        <AlertDialog.Overlay className="fixed inset-0 bg-black opacity-50" />
+                                        <AlertDialog.Content className="fixed left-1/2 top-1/2 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white p-6 shadow-lg">
+                                            <AlertDialog.Title className="text-xl font-semibold text-red-600">
+                                                Are you absolutely sure?
+                                            </AlertDialog.Title>
+                                            <AlertDialog.Description className="mt-4 text-gray-600">
+                                                You already booked this space on
+                                                another day. Its recommended
+                                                that you don&apos;t book a space
+                                                for more than one time a week so
+                                                other classes can also utilize
+                                                the space.
+                                            </AlertDialog.Description>
+                                            <div className="mt-6 flex justify-end gap-4">
+                                                <AlertDialog.Cancel asChild>
+                                                    <button
+                                                        onClick={
+                                                            handleAlertClose
+                                                        }
+                                                        className="rounded bg-gray-300 px-4 py-2 text-black hover:bg-gray-400"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </AlertDialog.Cancel>
+                                                <AlertDialog.Action asChild>
+                                                    <button
+                                                        className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                                                        onClick={() => {
+                                                            handleMakeBooking();
+                                                            handleAlertClose();
+                                                        }}
+                                                        disabled={
+                                                            !selectedSpace
+                                                        }
+                                                    >
+                                                        Yes, Book Space
+                                                    </button>
+                                                </AlertDialog.Action>
+                                            </div>
+                                        </AlertDialog.Content>
+                                    </AlertDialog.Portal>
+                                </AlertDialog.Root>
+                            ) : (
+                                <button
+                                    className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                                    onClick={handleBookingAttempt}
+                                    disabled={!selectedSpace}
+                                >
+                                    Book Space
+                                </button>
+                            )}
+
                             <Dialog.Close asChild>
-                                <button className="rounded bg-gray-300 px-4 py-2 text-black hover:bg-gray-400">
+                                <button
+                                    onClick={() => setSelectedSpace(null)}
+                                    className="ml-4 rounded bg-gray-300 px-4 py-2 text-black hover:bg-gray-400"
+                                >
                                     Cancel
                                 </button>
                             </Dialog.Close>
