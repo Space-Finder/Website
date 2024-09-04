@@ -13,6 +13,7 @@ import {
 } from "@radix-ui/react-icons";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 
+import { APIDown } from "@/core/lib/error";
 import { formatTime } from "@/core/lib/time";
 import { findTime } from "@/core/lib/periods";
 
@@ -52,56 +53,78 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
     const [bookingsTodo, setBookingsTodo] = useState<BookingTodo[]>([]);
     const [selectedTodo, setSelectedTodo] = useState<BookingTodo | null>(null);
 
+    const [error, setError] = useState(false);
+
+    if (error) {
+        throw new APIDown();
+    }
+
     useEffect(() => {
         // get the current week and save that shit
         (async () => {
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/week`,
-            );
-            const next_week = response.data.week + 1;
-            setWeekNumber(next_week);
+            try {
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/week`,
+                );
+                const next_week = response.data.week + 1;
+                setWeekNumber(next_week);
+            } catch {
+                setError(true);
+            }
         })();
     }, []);
 
     useEffect(() => {
         // fetch the classess that the teacher has
         (async () => {
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/courses`,
-                {
-                    params: { teacher_id: teacherId },
-                },
-            );
-            setClasses(response.data);
+            try {
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/courses`,
+                    {
+                        params: { teacher_id: teacherId },
+                    },
+                );
+                setClasses(response.data);
+            } catch {
+                setError(true);
+            }
         })();
     }, [teacherId]);
 
     async function fetchBookingsTodo(course_id: string) {
-        const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/todo`,
-            {
-                params: { teacher_id: teacherId },
-            },
-        );
-        setBookingsTodo(
-            response.data.filter(
-                (todo: BookingTodo) => todo.course_id === course_id,
-            ),
-        );
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/todo`,
+                {
+                    params: { teacher_id: teacherId },
+                },
+            );
+            setBookingsTodo(
+                response.data.filter(
+                    (todo: BookingTodo) => todo.course_id === course_id,
+                ),
+            );
+        } catch {
+            setError(true);
+        }
     }
 
     async function fetchExistingBookings(course_id: string) {
-        const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/bookings`,
-            {
-                params: { teacher_id: teacherId },
-            },
-        );
-        setExistingBookings(
-            response.data.filter(
-                (booking: Booking) => booking.course.id === course_id,
-            ),
-        );
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/bookings`,
+                {
+                    params: { teacher_id: teacherId },
+                },
+            );
+            setExistingBookings(
+                response.data.filter(
+                    (booking: Booking) => booking.course.id === course_id,
+                ),
+            );
+        } catch {
+            setError(true);
+        }
     }
 
     async function fetchAvailableSpaces(
@@ -109,17 +132,21 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
         common_id: string,
         line: number,
     ) {
-        const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/spaces/available`,
-            {
-                params: {
-                    period,
-                    common_id,
-                    line,
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/spaces/available`,
+                {
+                    params: {
+                        period,
+                        common_id,
+                        line,
+                    },
                 },
-            },
-        );
-        setAvailableSpaces(response.data);
+            );
+            setAvailableSpaces(response.data);
+        } catch {
+            setError(true);
+        }
     }
 
     async function handleMakeBooking() {
