@@ -30,6 +30,7 @@ type Booking = PrismaBooking & {
 
 interface BookingData {
     week: number;
+    line: number;
     period: number;
     space_id: string;
     course_id: string;
@@ -128,6 +129,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
 
         const bookingData: BookingData = {
             week: weekNumber,
+            line: selectedTodo.line,
             period: selectedTodo.period_number,
             space_id: selectedSpace,
             course_id: selectedTodo.course_id,
@@ -365,7 +367,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                             {availableSpaces.map((space) => (
                                 <li
                                     key={space.id}
-                                className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100 hover:bg-green-100" : "bg-white"}`}
+                                    className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100 hover:bg-green-100" : "bg-white"}`}
                                     onClick={() => setSelectedSpace(space.id)}
                                 >
                                     {space.name}
