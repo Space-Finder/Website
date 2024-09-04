@@ -1,7 +1,7 @@
-export class APIRequestIssue extends Error {
+export class APIDown extends Error {
     constructor(cause: any) {
         super(
-            "There was an issue making a request to the backend API. Please ensure that this is online.",
+            "There was an issue making a request to the backend API. It looks like the API is down",
         );
         this.cause = cause;
     }
