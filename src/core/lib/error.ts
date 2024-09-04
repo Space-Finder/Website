@@ -7,9 +7,8 @@ export class APIDown extends Error {
 }
 
 export class APIRequestError extends Error {
-    constructor(cause: any) {
+    constructor() {
         super("There was an issue making a request to the backend API");
-        this.cause = cause;
     }
 }
 
