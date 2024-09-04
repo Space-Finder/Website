@@ -4,7 +4,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Select from "@radix-ui/react-select";
 import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
+import {
+    CheckIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+} from "@radix-ui/react-icons";
 
 import { formatTime } from "@/core/lib/time";
 import { findTime } from "@/core/lib/periods";
@@ -154,11 +160,10 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
 
             <div className="mb-6">
                 <h2 className="mb-2 text-lg font-semibold">Select a Class</h2>
-                <select
-                    className="w-full rounded border p-2"
+
+                <Select.Root
                     value={selectedClass?.id || ""}
-                    onChange={(e) => {
-                        const selectedClassId = e.target.value;
+                    onValueChange={(selectedClassId) => {
                         const classInfo = classes.find(
                             (cls) => cls.id === selectedClassId,
                         );
@@ -169,15 +174,44 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                         }
                     }}
                 >
-                    <option value="" disabled>
-                        Select a class...
-                    </option>
-                    {classes.map((cls) => (
-                        <option key={cls.id} value={cls.id}>
-                            {cls.name} ({cls.code})
-                        </option>
-                    ))}
-                </select>
+                    <Select.Trigger className="flex w-full items-center justify-between rounded border p-2">
+                        <Select.Value placeholder="Select a class..." />
+                        <Select.Icon>
+                            <ChevronDownIcon />
+                        </Select.Icon>
+                    </Select.Trigger>
+
+                    <Select.Portal>
+                        <Select.Content className="rounded bg-white shadow-lg">
+                            <Select.ScrollUpButton className="flex items-center justify-center p-1">
+                                <ChevronUpIcon />
+                            </Select.ScrollUpButton>
+
+                            <Select.Viewport>
+                                <Select.Group>
+                                    {classes.map((cls) => (
+                                        <Select.Item
+                                            key={cls.id}
+                                            value={cls.id}
+                                            className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                                        >
+                                            <Select.ItemText>
+                                                {cls.name} ({cls.code})
+                                            </Select.ItemText>
+                                            <Select.ItemIndicator>
+                                                <CheckIcon />
+                                            </Select.ItemIndicator>
+                                        </Select.Item>
+                                    ))}
+                                </Select.Group>
+                            </Select.Viewport>
+
+                            <Select.ScrollDownButton className="flex items-center justify-center p-1">
+                                <ChevronDownIcon />
+                            </Select.ScrollDownButton>
+                        </Select.Content>
+                    </Select.Portal>
+                </Select.Root>
             </div>
 
             {selectedClass && (
