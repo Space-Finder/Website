@@ -3,17 +3,18 @@ import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
 import { formatTime } from "@/core/lib/time";
 import { findNextPeriod } from "@/core/lib/periods";
+import { UnableToFetchTeacher } from "@/core/lib/error";
 
 const Dashboard = async () => {
-    const s = (await auth())!;
+    const session = (await auth())!;
 
     const teacher = await prisma.teacher.findUnique({
-        where: { userId: s.user.id },
+        where: { userId: session.user.id },
         include: { user: true, classes: true, common: true },
     });
 
     if (!teacher) {
-        throw Error("teacher not found");
+        throw new UnableToFetchTeacher(session.user.id);
     }
 
     const { classes } = teacher;
@@ -33,7 +34,7 @@ const Dashboard = async () => {
                     style={{ color: teacher.common.color || "#3b68da" }}
                     className="drop-shadow-sm"
                 >
-                    {greeting}, {s.user.name.split(" ")[0]}
+                    {greeting}, {session.user.name.split(" ")[0]}
                 </h1>
             </div>
             <div>

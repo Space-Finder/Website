@@ -16,3 +16,9 @@ export class APIRequestError extends Error {
         this.cause = cause;
     }
 }
+
+export class UnableToFetchTeacher extends Error {
+    constructor(id: string) {
+        super(`Could not find a teacher with this provided user id (${id})`);
+    }
+}

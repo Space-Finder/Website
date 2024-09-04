@@ -4,7 +4,7 @@ import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
 import { Locations } from "@/core/types/other";
 import { numberOfLines } from "@/core/lib/periods";
-import { APIRequestIssue } from "@/core/lib/error";
+import { UnableToFetchTeacher } from "@/core/lib/error";
 import WeeklyTimetable from "@/core/components/teachers/weeklyTimetable";
 
 const TeacherTimetable = async () => {
@@ -16,7 +16,7 @@ const TeacherTimetable = async () => {
     });
 
     if (!teacher) {
-        throw Error("Teacher Not Found");
+        throw new UnableToFetchTeacher(session.user.id);
     }
 
     const { classes, common } = teacher;
