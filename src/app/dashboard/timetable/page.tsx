@@ -38,11 +38,11 @@ const TeacherTimetable = async () => {
     try {
         const response = await fetch(URL);
         if (!response.ok) {
-            throw new APIDown();
+            throw new APIRequestError();
         }
         data = await response.json();
     } catch (err) {
-        throw new APIRequestError(err);
+        throw new APIDown();
     }
 
     const bookings = await prisma.booking.findMany({

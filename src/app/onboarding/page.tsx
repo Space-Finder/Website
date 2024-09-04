@@ -33,7 +33,7 @@ async function isTeacher(email: string) {
     try {
         const response = await fetch(URL);
         if (!response.ok) {
-            throw new APIDown();
+            throw new APIRequestError();
         }
         const data: {
             success: boolean;
@@ -42,7 +42,7 @@ async function isTeacher(email: string) {
 
         return data.isTeacher;
     } catch (err) {
-        throw new APIRequestError(err);
+        throw new APIDown();
     }
 }
 
