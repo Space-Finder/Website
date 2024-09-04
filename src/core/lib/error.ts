@@ -6,3 +6,13 @@ export class APIDown extends Error {
         this.cause = cause;
     }
 }
+
+export class APIRequestError extends Error {
+    reason: string;
+
+    constructor(cause: any, reason: string) {
+        super("There was an issue making a request to the backend API");
+        this.reason = reason;
+        this.cause = cause;
+    }
+}
