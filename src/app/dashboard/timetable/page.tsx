@@ -1,5 +1,6 @@
 import React from "react";
 
+import { Suspense } from "react";
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
 import { Locations } from "@/core/types/other";
@@ -11,7 +12,11 @@ import {
 } from "@/core/lib/error";
 import WeeklyTimetable from "@/core/components/teachers/weeklyTimetable";
 
-const TeacherTimetable = async () => {
+const TeacherTimetable = async ({
+    searchParams,
+}: {
+    searchParams?: { [key: string]: string | undefined };
+}) => {
     const session = (await auth())!;
 
     const teacher = await prisma.teacher.findUnique({
@@ -25,7 +30,12 @@ const TeacherTimetable = async () => {
 
     const { classes, common } = teacher;
 
-    const week = await getWeek();
+    let week = await getWeek();
+    let isNextWeek = false;
+    if (searchParams !== undefined && searchParams["week"] === "next") {
+        week += 1;
+        isNextWeek = true;
+    }
 
     const lineList = Array.from({ length: numberOfLines }, (_, index) => {
         const line = index + 1;
@@ -65,6 +75,7 @@ const TeacherTimetable = async () => {
             lineList={lineList}
             teacherCommon={common}
             locations={locationList}
+            isNextWeek={isNextWeek}
         />
     );
 };

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 import { PERIODS } from "@/core/lib/periods";
@@ -18,10 +20,12 @@ const WeeklyTimetable = ({
     lineList,
     teacherCommon,
     locations,
+    isNextWeek,
 }: {
     lineList: Array<Course | null>;
     teacherCommon: Common;
     locations: Locations;
+    isNextWeek: boolean;
 }) => {
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
     const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0);
@@ -54,6 +58,8 @@ const WeeklyTimetable = ({
         lineList,
         timeSlotsHeight,
     );
+
+    const router = useRouter();
 
     const Weekdays = () => {
         return (
@@ -118,12 +124,34 @@ const WeeklyTimetable = ({
                             </h6>
                         </div>
                         <div className="flex items-center gap-px rounded-lg bg-gray-100 p-1">
-                            <button className="rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-indigo-600 transition-all duration-300 hover:bg-white hover:text-indigo-600">
+                            <button
+                                onClick={() => {
+                                    router.push("/dashboard/timetable");
+                                }}
+                                className={
+                                    "rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600" +
+                                    (!isNextWeek
+                                        ? " bg-white text-indigo-600"
+                                        : "")
+                                }
+                            >
                                 Week
                             </button>
-                            {/* <button className="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600">
+                            <button
+                                onClick={() => {
+                                    router.push(
+                                        "/dashboard/timetable?week=next",
+                                    );
+                                }}
+                                className={
+                                    "rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600" +
+                                    (isNextWeek
+                                        ? " bg-white text-indigo-600"
+                                        : "")
+                                }
+                            >
                                 Next Week
-                            </button> */}
+                            </button>
                         </div>
                     </div>
                     <div>
