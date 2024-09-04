@@ -56,17 +56,22 @@ const TeacherTimetable = async () => {
         common_names.set(common.id, [common.name, common.color, common.color2]);
     }
 
-    const locationList: Locations = Array.from({ length: 6 }, (_, index) => {
-        const line = index + 1;
-        const filteredBookings = bookings.filter((b) => b.course.line == line);
-        if (filteredBookings.length == 0) {
-            return null;
-        }
-        return filteredBookings.map((booking) => [
-            booking.space.name,
-            ...common_names.get(booking.course.commonId)!,
-        ]);
-    });
+    const locationList: Locations = Array.from(
+        { length: numberOfLines },
+        (_, index) => {
+            const line = index + 1;
+            const filteredBookings = bookings.filter(
+                (b) => b.course.line == line,
+            );
+            if (filteredBookings.length == 0) {
+                return null;
+            }
+            return filteredBookings.map((booking) => [
+                booking.space.name,
+                ...common_names.get(booking.course.commonId)!,
+            ]);
+        },
+    );
 
     return (
         <WeeklyTimetable
