@@ -83,9 +83,9 @@ export const createEventFactory = (
         const [location, common, primaryColor, secondaryColor] =
             event_location_data && event_location_data[period]
                 ? event_location_data[period]
-                : ["Unknown", "Unknown", "", ""]; // default location, common...
+                : ["Not Yet Booked", "None", "", ""]; // default location, common...
 
-        const course = lineList[line] || { name: "Unknown", code: "UNKN" };
+        const course = lineList[line]!;
 
         return (
             <div
