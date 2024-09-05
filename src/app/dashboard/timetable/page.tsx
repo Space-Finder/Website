@@ -1,6 +1,5 @@
 import React from "react";
 
-import { Suspense } from "react";
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
 import { Locations } from "@/core/types/other";
