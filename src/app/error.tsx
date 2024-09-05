@@ -3,6 +3,8 @@
 import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 
+import { extractErrorMessage } from "@/core/lib/exceptions";
+
 export default function GlobalError({
     error,
     reset,
@@ -50,7 +52,7 @@ export default function GlobalError({
                         </p>
                         <p className="mt-4 text-gray-500 dark:text-gray-400">
                             <span className="font-bold">Message:</span>{" "}
-                            {error.message}
+                            {extractErrorMessage(error)}
                         </p>
                     </div>
 
