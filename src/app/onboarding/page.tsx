@@ -24,7 +24,7 @@ export default async function Onboarding() {
 }
 
 async function isTeacher(email: string) {
-    const URL = `${process.env.API_URL}/api/teachers/verify?${new URLSearchParams(
+    const URL = `${process.env.NEXT_PUBLIC_API_URL}/api/teachers/verify?${new URLSearchParams(
         {
             email,
         },
@@ -42,6 +42,7 @@ async function isTeacher(email: string) {
 
         return data.isTeacher;
     } catch (err) {
+        console.log(err);
         throw new APIDown();
     }
 }
