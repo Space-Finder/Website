@@ -54,19 +54,41 @@ const TeacherTimetable = async ({
     }
 
     const locationList: Locations = Array.from(
+        // run this loop for every line
         { length: numberOfLines },
         (_, index) => {
             const line = index + 1;
             const filteredBookings = bookings.filter(
                 (b) => b.course.line == line,
             );
+
+            // no bookings exist for the class
             if (filteredBookings.length == 0) {
                 return null;
             }
-            return filteredBookings.map((booking) => [
-                booking.space.name,
-                ...common_names.get(booking.course.commonId)!,
-            ]);
+
+            // the bookings for that week
+            const result = [];
+
+            // for every period (1, 2, 3)
+            for (let periodNumber = 1; periodNumber < 4; periodNumber++) {
+                // find the booking that corresponds to that period
+                const booking = filteredBookings.find(
+                    (b) => b.periodNumber == periodNumber,
+                );
+                if (booking) {
+                    // if the booking is found add its location to the list
+                    const location_data = [
+                        booking.space.name,
+                        ...common_names.get(booking.course.commonId)!,
+                    ];
+                    result.push(location_data as [string, string, string]);
+                } else {
+                    result.push(null);
+                }
+            }
+
+            return result;
         },
     );
 
