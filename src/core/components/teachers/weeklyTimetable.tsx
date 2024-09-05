@@ -126,6 +126,7 @@ const WeeklyTimetable = ({
                         <div className="flex items-center gap-px rounded-lg bg-gray-100 p-1">
                             <button
                                 onClick={() => {
+                                    router.refresh();
                                     router.push("/dashboard/timetable");
                                 }}
                                 className={
@@ -139,6 +140,7 @@ const WeeklyTimetable = ({
                             </button>
                             <button
                                 onClick={() => {
+                                    router.refresh();
                                     router.push(
                                         "/dashboard/timetable?week=next",
                                     );
