@@ -12,11 +12,12 @@ const NEW_USER_URL = inDevelopmentMode ? "/" : "/onboarding";
 export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
 export const SCHOOL_DOMAIN = "ormiston.school.nz";
 
+// defines what i'll be requesting from google
 const GOOGLE_AUTHORIZATION_URL = {
     params: {
         prompt: "consent",
         access_type: "offline",
-        hd: SCHOOL_DOMAIN,
+        hd: SCHOOL_DOMAIN, // so google allows only school domain logins
     },
     response_type: "code",
 };
@@ -47,6 +48,7 @@ const CALLBACKS = {
         }
 
         try {
+            // refresh token
             const response = await fetch(
                 "https://oauth2.googleapis.com/token",
                 {
@@ -93,10 +95,12 @@ const CALLBACKS = {
         return session;
     },
     authorized: async ({ auth }) => !!auth,
+    // allow user to sign in if there email exists and ends with the school domain
     signIn: ({ user }) =>
         !!(user.email && user.email.endsWith("@" + SCHOOL_DOMAIN)),
 } satisfies NextAuthConfig["callbacks"];
 
+// these only work in devmode so I can see stuff
 const EVENTS = inDevelopmentMode
     ? ({
           async signIn(message) {

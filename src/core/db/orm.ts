@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
+// prisma singleton, basically only one object can exist
 const prismaClientSingleton = () => {
     return new PrismaClient(
         process.env.NODE_ENV == "development"

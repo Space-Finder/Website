@@ -42,7 +42,6 @@ async function isTeacher(email: string) {
 
         return data.isTeacher;
     } catch (err) {
-        console.log(err);
         throw new APIDown();
     }
 }

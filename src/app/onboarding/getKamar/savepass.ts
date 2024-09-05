@@ -1,8 +1,10 @@
 "use server";
 
-import prisma from "@/core/db/orm";
 import { redirect } from "next/navigation";
 
+import prisma from "@/core/db/orm";
+
+// server actiont that runs on submit
 export default async function handleSubmit(id: string, password: string) {
     await prisma.user.update({
         // will encrypt later

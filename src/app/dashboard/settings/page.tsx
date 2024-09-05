@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 
 const Settings = () => {
+    // this is a placeholder page
     const [opacity, setOpacity] = useState(100);
 
     return (

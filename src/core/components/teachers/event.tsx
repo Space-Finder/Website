@@ -141,6 +141,7 @@ function eventLocationCSS(
 
     const height = endOffset - offset - MARGIN;
 
+    // returns the position of the element and its height
     return {
         top: `${offset}px`,
         height: `${height}px`,

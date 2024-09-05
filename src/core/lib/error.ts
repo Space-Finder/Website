@@ -1,3 +1,5 @@
+// custom error classes
+
 export class APIDown extends Error {
     constructor() {
         super(

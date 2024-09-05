@@ -2,6 +2,7 @@ import { Period } from "../types/other";
 
 export const numberOfLines = 6;
 
+// The times when each period/line occurs. This can be easily updated
 export const PERIODS: Period[][] = [
     [
         {

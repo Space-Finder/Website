@@ -1,3 +1,4 @@
+import "dotenv/config";
 import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
 import { SessionProvider } from "next-auth/react";
@@ -6,7 +7,6 @@ import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 
-import "dotenv/config";
 import { Theme } from "@radix-ui/themes";
 import { all_fonts } from "@/core/lib/fonts";
 import Navbar from "@/core/components/navbar";

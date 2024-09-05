@@ -34,8 +34,9 @@ const TeacherTimetable = async ({
     if (searchParams !== undefined && searchParams["week"] === "next") {
         week += 1;
         isNextWeek = true;
-    }
+    } // show next weeks timetable if ?week=next is at end of url
 
+    // find classes for each line
     const lineList = Array.from({ length: numberOfLines }, (_, index) => {
         const line = index + 1;
         return classes.find((c) => c.line === line) || null;

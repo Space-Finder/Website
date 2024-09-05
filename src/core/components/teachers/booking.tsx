@@ -3,20 +3,21 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
-import * as Select from "@radix-ui/react-select";
-import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
+
 import {
     CheckIcon,
     ChevronDownIcon,
     ChevronUpIcon,
 } from "@radix-ui/react-icons";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
-
 import { APIDown } from "@/core/lib/error";
 import { formatTime } from "@/core/lib/time";
 import { findTime } from "@/core/lib/periods";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as Select from "@radix-ui/react-select";
+import { Booking as PrismaBooking, Space, Course } from "@prisma/client";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 
+// types for bookings
 interface BookingTodo {
     period_number: number;
     line: number;
@@ -56,6 +57,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
     const [error, setError] = useState(false);
 
     if (error) {
+        // if the apis down this will run
         throw new APIDown();
     }
 
@@ -377,6 +379,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                 </>
             )}
 
+            {/* the modal that shows up asking for space */}
             <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <Dialog.Portal>
                     <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
@@ -397,6 +400,7 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
                         </ul>
                         <div className="mt-6 flex justify-end">
                             {showAlert ? (
+                                // asks for confirmation if they are booking same place twice
                                 <AlertDialog.Root
                                     open={showAlert}
                                     onOpenChange={handleAlertClose}

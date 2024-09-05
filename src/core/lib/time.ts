@@ -12,9 +12,11 @@ export function getWeekDays(nextWeek: boolean = false): Date[] {
         weekDays.push(currentDay);
     }
 
+    // returns the dates in a week
     return weekDays;
 }
 
+// converts 24h to 12h time
 export function formatTime(timeString: string) {
     const [hourString, minute] = timeString.split(":");
     const hour = +hourString % 24;

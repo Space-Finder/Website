@@ -1,3 +1,4 @@
+// list of fonts I want to use in my app
 import { Poppins, Inter, Roboto } from "next/font/google";
 
 const poppins = Poppins({

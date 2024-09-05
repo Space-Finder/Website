@@ -1,3 +1,5 @@
+// what my enviroment variables file will look like
+
 declare global {
     namespace NodeJS {
         interface ProcessEnv {

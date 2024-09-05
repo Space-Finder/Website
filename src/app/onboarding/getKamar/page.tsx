@@ -1,8 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import handleSubmit from "./savepass";
-import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
+
+import handleSubmit from "./savepass";
 
 export default function NewUserOnboarding() {
     const [kamarPassword, setKamarPassword] = useState("");

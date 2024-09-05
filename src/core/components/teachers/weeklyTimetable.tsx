@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -27,19 +26,14 @@ const WeeklyTimetable = ({
     locations: Locations;
     isNextWeek: boolean;
 }) => {
+    const router = useRouter();
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
-    const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0);
-
-    useEffect(() => {
-        if (timeSlotsContainerRef.current) {
-            const height = timeSlotsContainerRef.current.offsetHeight;
-            setTimeSlotsHeight(height - Math.ceil(height / (HOURS + 1)));
-        }
-    }, []);
+    const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0); // height of timetable
 
     const today = new Date();
     const weekdays = getWeekDays(isNextWeek);
 
+    // list of times from 8am to 4pm
     const timeSlots: string[] = Array.from(
         { length: 9 },
         (_, i) => `${8 + i}:00`,
@@ -52,6 +46,7 @@ const WeeklyTimetable = ({
         ),
     );
 
+    // get component from factory
     const TimetableEvent = createEventFactory(
         locations,
         teacherCommon,
@@ -59,7 +54,13 @@ const WeeklyTimetable = ({
         timeSlotsHeight,
     );
 
-    const router = useRouter();
+    useEffect(() => {
+        // calculates the height when the page loads
+        if (timeSlotsContainerRef.current) {
+            const height = timeSlotsContainerRef.current.offsetHeight;
+            setTimeSlotsHeight(height - Math.ceil(height / (HOURS + 1)));
+        }
+    }, []);
 
     const Weekdays = () => {
         return (
@@ -83,11 +84,13 @@ const WeeklyTimetable = ({
                                         weekday: "short",
                                     })}
                                 </h1>
+                                {/* render all events for that day */}
                                 {events[idx].map((event, event_index) => {
                                     return (
-                                        <React.Fragment key={event_index}>
-                                            <TimetableEvent event={event} />
-                                        </React.Fragment>
+                                        <TimetableEvent
+                                            key={event_index}
+                                            event={event}
+                                        />
                                     );
                                 })}
                             </div>
@@ -159,8 +162,10 @@ const WeeklyTimetable = ({
                     <div>
                         <div className="grid h-full w-full grid-cols-[0.4fr_1fr_1fr_1fr_1fr_1fr] border-t border-gray-200">
                             <div></div>
+
                             <Weekdays />
 
+                            {/* times on the left */}
                             <div
                                 ref={timeSlotsContainerRef}
                                 className="grid grid-rows-[repeat(9,1fr)] border-t border-gray-200"
@@ -175,6 +180,7 @@ const WeeklyTimetable = ({
                                 ))}
                             </div>
 
+                            {/* background grid */}
                             {weekdays.map((_, idx) => (
                                 <div
                                     key={idx}

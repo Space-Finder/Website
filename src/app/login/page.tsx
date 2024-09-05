@@ -8,6 +8,7 @@ const Login = ({
 }: {
     searchParams: { callbackUrl: string | undefined };
 }) => {
+    // find the url to redirect the user to after they login, if not found default to dashboard
     const redirectTo = searchParams.callbackUrl ?? "/dashboard";
 
     return (

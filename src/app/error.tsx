@@ -14,6 +14,7 @@ export default function GlobalError({
 }) {
     const router = useRouter();
     function handleReset() {
+        // allow user to repeat past action
         startTransition(() => {
             reset();
             router.refresh();
