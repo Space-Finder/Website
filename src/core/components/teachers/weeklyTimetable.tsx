@@ -38,7 +38,7 @@ const WeeklyTimetable = ({
     }, []);
 
     const today = new Date();
-    const weekdays = getWeekDays();
+    const weekdays = getWeekDays(isNextWeek);
 
     const timeSlots: string[] = Array.from(
         { length: 9 },

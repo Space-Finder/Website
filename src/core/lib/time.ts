@@ -1,5 +1,9 @@
-export function getWeekDays(): Date[] {
-    const date = new Date();
+export function getWeekDays(nextWeek: boolean = false): Date[] {
+    const right_now = new Date();
+    const date = nextWeek
+        ? new Date(right_now.setDate(right_now.getDate() + 7))
+        : right_now;
+
     const firstDayOfWeek = date.getDate() - date.getDay() + 1; // Monday
     const weekDays = [];
 
