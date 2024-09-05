@@ -186,12 +186,6 @@ export default function BookingPage({ teacherId }: { teacherId: string }) {
     const handleBookingAttempt = () => {
         // if they have already booked the space another time that week
         // just confirm with them, that they are SURE they wanna be using that space again
-        console.log(
-            selectedTodo?.course_id!,
-            selectedTodo?.line!,
-            selectedTodo?.period_number,
-        );
-
         const alreadyBookedSpace = existingBookings.find(
             (b) => b.space.id == selectedSpace,
         );
