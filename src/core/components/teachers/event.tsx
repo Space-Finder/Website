@@ -143,7 +143,7 @@ function eventLocationCSS(
 
     // returns the position of the element and its height
     return {
-        top: `${offset}px`,
+        top: `${offset + pixels_per_hour}px`,
         height: `${height}px`,
     };
 }
