@@ -11,4 +11,4 @@ export type Period = {
     | { type: "custom"; name: string }
 );
 
-export type Locations = (string[][] | null)[];
+export type Locations = (([string, string, string] | null)[] | null)[];
