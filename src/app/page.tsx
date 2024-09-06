@@ -28,7 +28,7 @@ export default function Home() {
                                 Finds
                             </span> its{" "}
                             <span className="text-[#DA6F6E] underline">
-                                place
+                                Place
                             </span>
                         </h1>
                         <HomepageButton />
