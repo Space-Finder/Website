@@ -1,7 +1,9 @@
 import React from "react";
+
 import prisma from "@/core/db/orm";
 import { auth } from "@/core/lib/auth";
 import { formatTime } from "@/core/lib/time";
+import Greeting from "@/core/components/greeting";
 import { findNextPeriod } from "@/core/lib/periods";
 import { UnableToFetchTeacher } from "@/core/lib/error";
 
@@ -19,23 +21,16 @@ const Dashboard = async () => {
 
     const { classes } = teacher;
 
-    const hour = new Date().getHours();
-    const greeting =
-        "Good " +
-        ((hour < 12 && "Morning") || (hour < 18 && "Afternoon") || "Evening");
-
     const commons = await prisma.common.findMany();
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     return (
         <div className="mt-10">
             <div className="mx-auto mb-10 w-full items-center text-center font-inter text-3xl font-bold">
-                <h1
-                    style={{ color: teacher.common.color || "#3b68da" }}
-                    className="drop-shadow-sm"
-                >
-                    {greeting}, {session.user.name.split(" ")[0]}
-                </h1>
+                <Greeting
+                    commonColor={teacher.common.color || "#3b68da"}
+                    name={session.user.name}
+                />
             </div>
             <div>
                 {classes.map((c, i) => {
