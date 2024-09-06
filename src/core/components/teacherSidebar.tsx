@@ -21,7 +21,10 @@ const DashboardSidebar = () => {
             <div className="-mx-2 mt-6 flex flex-col items-center">
                 <Image
                     className="mx-2 h-24 w-24 rounded-full object-cover"
-                    src={session.data.user.image}
+                    src={
+                        session.data.user.image ||
+                        "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
+                    }
                     width={96}
                     height={96}
                     unoptimized
