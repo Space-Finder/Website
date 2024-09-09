@@ -2,10 +2,12 @@ import "dotenv/config";
 import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
 import { SessionProvider } from "next-auth/react";
+import { config as fontawesomeConfig } from "@fortawesome/fontawesome-svg-core";
 
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import "react-toastify/dist/ReactToastify.css";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 
 import { Theme } from "@radix-ui/themes";
 import { all_fonts } from "@/core/lib/fonts";
@@ -18,6 +20,8 @@ export const metadata: Metadata = {
 };
 
 const BACKGROUND_COLOR = "#f8f3ef";
+
+fontawesomeConfig.autoAddCss = false;
 
 export default async function RootLayout({
     children,
