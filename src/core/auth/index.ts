@@ -31,6 +31,7 @@ const config = {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
+    authBaseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/auth`,
 } satisfies AuthConfig;
 
 function Auth(config: AuthConfig): AuthFunctions {
