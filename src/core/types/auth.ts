@@ -1,3 +1,5 @@
+import type { NextRequest } from "next/server";
+
 export type AuthConfig = {
     pages: {
         newUser?: string;
@@ -18,3 +20,13 @@ export type AuthConfig = {
         clientSecret: string;
     };
 };
+
+export interface AuthFunctions {
+    auth: () => void;
+    handlers: {
+        GET: (req: NextRequest) => Promise<any>;
+        POST: (req: NextRequest) => Promise<any>;
+    };
+    signIn: () => void;
+    signOut: () => void;
+}

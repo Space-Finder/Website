@@ -1,3 +1,3 @@
-import { AuthConfig } from "./auth";
+import { AuthConfig, AuthFunctions } from "./auth";
 
-export type { AuthConfig };
+export type { AuthConfig, AuthFunctions };
