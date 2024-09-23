@@ -1,15 +1,15 @@
 import type { NextRequest } from "next/server";
 
 export type AuthConfig = {
-    pages: {
+    pages?: {
         newUser?: string;
         signIn?: string;
         signOut?: string;
     };
-    token: {
-        // will be in seconds
-        accessTokenLifespan: number;
-        refreshTokenLifespan: number;
+    token?: {
+        // Token lifespan is in seconds
+        accessTokenLifespan?: number;
+        refreshTokenLifespan?: number;
     };
     secrets: {
         accessTokenSecret: string;
