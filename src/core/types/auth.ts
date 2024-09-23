@@ -19,6 +19,7 @@ export type AuthConfig = {
         clientId: string;
         clientSecret: string;
     };
+    authBaseURL: string;
 };
 
 export interface AuthFunctions {
