@@ -24,7 +24,7 @@ const config = {
         refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
     },
     google: {
-        clientId: process.env.GOOGLE_CLIENT_SECRET,
+        clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
     authBaseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth`,
