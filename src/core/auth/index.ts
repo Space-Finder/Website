@@ -31,15 +31,17 @@ const config = {
     errorURL: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/error`,
 } satisfies AuthConfig;
 
+type handlerParam = { params: { route: string[] } };
+
 function Auth(config: AuthConfig) {
     return {
         auth: async () => serverSession(config),
         signIn: () => login(config),
         signOut: () => logout(config),
         handlers: {
-            GET: async (req: NextRequest, { params }: any) =>
+            GET: async (req: NextRequest, { params }: handlerParam) =>
                 authRequestHandler(config, req, params),
-            POST: async (req: NextRequest, { params }: any) =>
+            POST: async (req: NextRequest, { params }: handlerParam) =>
                 authRequestHandler(config, req, params),
         },
     };
