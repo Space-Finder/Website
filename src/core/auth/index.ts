@@ -28,6 +28,7 @@ const config = {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
     authBaseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth`,
+    errorURL: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/error`,
 } satisfies AuthConfig;
 
 function Auth(config: AuthConfig) {
