@@ -5,8 +5,8 @@ export type AuthConfig = {
         signOut?: string;
     };
     token?: {
-        accessTokenLifespan?: string | number;
-        refreshTokenLifespan?: string | number;
+        accessTokenLifespan?: number;
+        refreshTokenLifespan?: number;
     };
     secrets: {
         accessTokenSecret: string;

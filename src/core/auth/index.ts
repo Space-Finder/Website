@@ -16,8 +16,8 @@ const config = {
         newUser: NEW_USER_URL,
     },
     token: {
-        accessTokenLifespan: "15m",
-        refreshTokenLifespan: "7d",
+        accessTokenLifespan: 60 * 15, // 15 Minutes
+        refreshTokenLifespan: 60 * 60 * 24 * 7, // 7 Days
     },
     secrets: {
         accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
