@@ -18,4 +18,5 @@ export type AuthConfig = {
         clientSecret: string;
     };
     authBaseURL: string;
+    errorURL: string;
 };
