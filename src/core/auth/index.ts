@@ -1,10 +1,9 @@
-import { google } from "googleapis";
 import { NextRequest } from "next/server";
 
+import { AuthConfig } from "@core/types";
 import { login, logout } from "./actions";
 import { serverSession } from "./session";
 import { authHTTPHandler } from "./handler";
-import { AuthConfig, AuthFunctions } from "@core/types";
 
 const inDevelopmentMode = process.env.NODE_ENV == "development";
 
@@ -25,23 +24,17 @@ const config = {
         refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
     },
     google: {
-        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientId: process.env.GOOGLE_CLIENT_SECRET,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
     authBaseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth`,
 } satisfies AuthConfig;
 
-function Auth(config: AuthConfig): AuthFunctions {
-    const oauth2Client = new google.auth.OAuth2({
-        clientId: config.google.clientId,
-        clientSecret: config.google.clientSecret,
-        redirectUri: `${config.authBaseURL}/callback/google`,
-    });
-
+function Auth(config: AuthConfig) {
     return {
         auth: async () => serverSession(config),
-        signIn: () => login(oauth2Client),
-        signOut: () => logout(oauth2Client),
+        signIn: () => login(config),
+        signOut: () => logout(config),
         handlers: {
             GET: async (req: NextRequest) => authHTTPHandler(config, req),
             POST: async (req: NextRequest) => authHTTPHandler(config, req),
