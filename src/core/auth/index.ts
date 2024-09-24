@@ -36,7 +36,7 @@ type handlerParam = { params: { route: string[] } };
 function Auth(config: AuthConfig) {
     return {
         auth: async () => serverSession(config),
-        signIn: () => login(config),
+        signIn: (callbackURL?: string) => login(config, callbackURL),
         signOut: () => logout(config),
         handlers: {
             GET: async (req: NextRequest, { params }: handlerParam) =>
