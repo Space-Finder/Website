@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { AuthConfig } from "@core/types";
 import { login, logout } from "./actions";
 import { serverSession } from "./session";
-import { authHTTPHandler } from "./handler";
+import { authRequestHandler } from "./handler";
 
 const inDevelopmentMode = process.env.NODE_ENV == "development";
 
@@ -36,8 +36,10 @@ function Auth(config: AuthConfig) {
         signIn: () => login(config),
         signOut: () => logout(config),
         handlers: {
-            GET: async (req: NextRequest) => authHTTPHandler(config, req),
-            POST: async (req: NextRequest) => authHTTPHandler(config, req),
+            GET: async (req: NextRequest, { params }: any) =>
+                authRequestHandler(config, req, params),
+            POST: async (req: NextRequest, { params }: any) =>
+                authRequestHandler(config, req, params),
         },
     };
 }
