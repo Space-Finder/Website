@@ -1,0 +1,24 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  googleId String @unique @map("google_id")
+
+  name  String
+  email String  @unique
+  image String?
+
+  isOnboarded   Boolean @default(false) @map("is_onboarded")
+  kamarPassword String? @map("kamar_password")
+  isTeacher     Boolean @default(false) @map("is_teacher")
+
+  @@map("users")
+}
