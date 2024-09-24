@@ -1,17 +1,14 @@
+import { google } from "googleapis";
 import { NextRequest } from "next/server";
 
-import { login, logout } from "./client";
+import { login, logout } from "./actions";
 import { serverSession } from "./session";
 import { authHTTPHandler } from "./handler";
 import { AuthConfig, AuthFunctions } from "@core/types";
-import SessionContextProvider, { useSession, SessionContext } from "./provider";
 
 const inDevelopmentMode = process.env.NODE_ENV == "development";
 
 const NEW_USER_URL = inDevelopmentMode ? "/" : "/onboarding";
-
-export const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 min
-export const SCHOOL_DOMAIN = "ormiston.school.nz";
 
 const config = {
     pages: {
@@ -20,7 +17,7 @@ const config = {
         newUser: NEW_USER_URL,
     },
     token: {
-        accessTokenLifespan: ACCESS_TOKEN_EXPIRY,
+        accessTokenLifespan: 15 * 60,
         refreshTokenLifespan: 86400 * 7, // 7 days
     },
     secrets: {
@@ -31,14 +28,20 @@ const config = {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
-    authBaseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/auth`,
+    authBaseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth`,
 } satisfies AuthConfig;
 
 function Auth(config: AuthConfig): AuthFunctions {
+    const oauth2Client = new google.auth.OAuth2({
+        clientId: config.google.clientId,
+        clientSecret: config.google.clientSecret,
+        redirectUri: `${config.authBaseURL}/callback/google`,
+    });
+
     return {
-        auth: () => serverSession(config),
-        signIn: () => login(config),
-        signOut: () => logout(config),
+        auth: async () => serverSession(config),
+        signIn: () => login(oauth2Client),
+        signOut: () => logout(oauth2Client),
         handlers: {
             GET: async (req: NextRequest) => authHTTPHandler(config, req),
             POST: async (req: NextRequest) => authHTTPHandler(config, req),
@@ -46,14 +49,4 @@ function Auth(config: AuthConfig): AuthFunctions {
     };
 }
 
-const { auth, handlers, signIn, signOut } = Auth(config);
-
-export {
-    auth,
-    handlers,
-    signIn,
-    signOut,
-    SessionContextProvider,
-    useSession,
-    SessionContext,
-};
+export const { auth, handlers, signIn, signOut } = Auth(config);
