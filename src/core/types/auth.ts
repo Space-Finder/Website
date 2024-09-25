@@ -19,3 +19,10 @@ export type AuthConfig = {
     authBaseURL: string;
     errorURL: string;
 };
+
+export type Session = {
+    id: string;
+    name: string;
+    email: string;
+    picture: string;
+};
