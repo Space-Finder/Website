@@ -8,3 +8,9 @@ export const AccessTokenValidator = z.object({
     iat: z.number(),
     exp: z.number(),
 });
+
+export const RefreshTokenValidator = z.object({
+    id: z.string(),
+    iat: z.number(),
+    exp: z.number(),
+});
