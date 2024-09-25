@@ -1,9 +1,19 @@
 import { SignJWT } from "jose";
 import { addSeconds } from "date-fns";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 import { AuthConfig, Session } from "@core/types";
 
-export async function issueTokens(config: AuthConfig, userData: Session) {
+interface Tokens {
+    accessToken: string;
+    refreshToken: string;
+    csrfToken: string;
+}
+
+export async function issueTokens(
+    config: AuthConfig,
+    userData: Session,
+): Promise<Tokens> {
     const { id, name, email, image } = userData;
 
     const accessTokenData = {
@@ -42,4 +52,37 @@ export async function issueTokens(config: AuthConfig, userData: Session) {
         .sign(encoder.encode(config.secrets.refreshTokenSecret));
 
     return { accessToken, refreshToken, csrfToken };
+}
+
+export function setCookies(
+    config: AuthConfig,
+    cookieStore: ReadonlyRequestCookies,
+    { accessToken, refreshToken, csrfToken }: Tokens,
+) {
+    const configValues = {
+        httpOnly: true,
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+    };
+
+    cookieStore.set({
+        name: "accessToken",
+        value: accessToken,
+        maxAge: config.token.accessTokenLifespan,
+        ...configValues,
+    });
+
+    cookieStore.set({
+        name: "csrfToken",
+        value: csrfToken,
+        maxAge: config.token.accessTokenLifespan,
+        ...configValues,
+    });
+
+    cookieStore.set({
+        name: "refreshToken",
+        value: refreshToken,
+        maxAge: config.token.refreshTokenLifespan,
+        ...configValues,
+    });
 }
