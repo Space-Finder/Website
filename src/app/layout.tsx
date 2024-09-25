@@ -9,7 +9,9 @@ import "@radix-ui/themes/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 
+import { auth } from "@auth";
 import FONTS from "@lib/fonts";
+import SessionContextProvider from "@core/auth/provider";
 
 export const metadata: Metadata = {
     title: "Space Finder",
@@ -25,15 +27,18 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await auth();
     const FONT_CLASSNAMES = FONTS.map((font) => font.variable).join(" ");
 
     return (
         <html lang="en">
             <body className={`bg-[${BACKGROUND_COLOR}] ${FONT_CLASSNAMES}`}>
-                <Theme hasBackground={false}>
-                    {children}
-                    <ToastContainer />
-                </Theme>
+                <SessionContextProvider value={session}>
+                    <Theme hasBackground={false}>
+                        {children}
+                        <ToastContainer />
+                    </Theme>
+                </SessionContextProvider>
             </body>
         </html>
     );

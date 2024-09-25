@@ -2,21 +2,23 @@
 
 import React, { createContext, useContext, useState } from "react";
 
-type Session = null;
+import { Session } from "@core/types";
 
 type SessionContext = {
-    session: Session;
-    setSession: React.Dispatch<React.SetStateAction<Session>>;
+    session: Session | null;
+    setSession: React.Dispatch<React.SetStateAction<Session | null>>;
 } | null;
 
 export const SessionContext = createContext<SessionContext>(null);
 
 export default function SessionContextProvider({
+    value,
     children,
 }: {
+    value: Session | null;
     children: React.ReactNode;
 }) {
-    const [session, setSession] = useState<Session>(null);
+    const [session, setSession] = useState<Session | null>(value);
 
     return (
         <SessionContext.Provider value={{ session, setSession }}>
@@ -31,5 +33,5 @@ export function useSession() {
         throw Error("useSession must be used within a SessionContextProvider");
     }
 
-    context.session;
+    return context.session;
 }
