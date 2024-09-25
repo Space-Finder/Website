@@ -11,6 +11,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 
 import { auth } from "@auth";
 import FONTS from "@lib/fonts";
+import Navbar from "@components/navbar";
 import SessionContextProvider from "@core/auth/provider";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default async function RootLayout({
             <body className={`bg-[${BACKGROUND_COLOR}] ${FONT_CLASSNAMES}`}>
                 <SessionContextProvider value={session}>
                     <Theme hasBackground={false}>
+                        <Navbar />
                         {children}
                         <ToastContainer />
                     </Theme>
