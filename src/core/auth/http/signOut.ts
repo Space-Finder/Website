@@ -8,7 +8,6 @@ export default async function handleLogout(config: AuthConfig) {
 
     cookieStore.delete("accessToken");
     cookieStore.delete("refreshToken");
-    cookieStore.delete("csrfToken");
 
     return redirect(config.pages.signOut);
 }

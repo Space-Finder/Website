@@ -11,7 +11,6 @@ export type AuthConfig = {
     secrets: {
         accessTokenSecret: string;
         refreshTokenSecret: string;
-        csrfTokenSecret: string;
     };
     google: {
         clientId: string;

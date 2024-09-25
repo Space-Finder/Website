@@ -8,7 +8,7 @@ import handleRefresh from "./refresh";
 import { AuthConfig } from "@core/types";
 import { useServerSession } from "../session";
 
-const ROUTES = new Set(["csrf", "session", "signIn", "signOut", "refresh"]);
+const ROUTES = new Set(["session", "signIn", "signOut", "refresh"]);
 
 export async function authRequestHandler(
     config: AuthConfig,
@@ -38,8 +38,6 @@ export async function authRequestHandler(
                     code,
                     searchParams.get("state"),
                 );
-            case "csrf":
-                break;
             case "session":
                 const session = await useServerSession(config);
                 return NextResponse.json(session);

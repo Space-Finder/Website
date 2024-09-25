@@ -7,7 +7,6 @@ import { AuthConfig, Session } from "@core/types";
 interface Tokens {
     accessToken: string;
     refreshToken: string;
-    csrfToken: string;
 }
 
 export async function issueTokens(
@@ -35,14 +34,6 @@ export async function issueTokens(
         .setProtectedHeader({ alg })
         .sign(encoder.encode(config.secrets.accessTokenSecret));
 
-    const csrfToken = await new SignJWT({ id })
-        .setExpirationTime(
-            addSeconds(time, config.token.accessTokenLifespan).getTime(),
-        )
-        .setIssuedAt()
-        .setProtectedHeader({ alg })
-        .sign(encoder.encode(config.secrets.csrfTokenSecret));
-
     const refreshToken = await new SignJWT({ id })
         .setExpirationTime(
             addSeconds(time, config.token.refreshTokenLifespan).getTime(),
@@ -51,30 +42,24 @@ export async function issueTokens(
         .setProtectedHeader({ alg })
         .sign(encoder.encode(config.secrets.refreshTokenSecret));
 
-    return { accessToken, refreshToken, csrfToken };
+    return { accessToken, refreshToken };
 }
 
 export function setCookies(
     config: AuthConfig,
     cookieStore: ReadonlyRequestCookies,
-    { accessToken, refreshToken, csrfToken }: Tokens,
+    { accessToken, refreshToken }: Tokens,
 ) {
     const configValues = {
         httpOnly: true,
         path: "/",
+        sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
-    };
+    } as const;
 
     cookieStore.set({
         name: "accessToken",
         value: accessToken,
-        maxAge: config.token.accessTokenLifespan,
-        ...configValues,
-    });
-
-    cookieStore.set({
-        name: "csrfToken",
-        value: csrfToken,
         maxAge: config.token.accessTokenLifespan,
         ...configValues,
     });

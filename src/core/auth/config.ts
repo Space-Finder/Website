@@ -18,7 +18,6 @@ const AUTH_CONFIG = {
     secrets: {
         accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
         refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
-        csrfTokenSecret: process.env.CSRF_TOKEN_SECRET,
     },
     google: {
         clientId: process.env.GOOGLE_CLIENT_ID,
