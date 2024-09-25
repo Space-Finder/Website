@@ -1,12 +1,12 @@
 import { google } from "googleapis";
 import { redirect } from "next/navigation";
-import { NextRequest } from "next/server";
-
-import { AuthConfig } from "@core/types";
+import { NextRequest, NextResponse } from "next/server";
 
 import handleLogin from "./signIn";
 import handleLogout from "./signOut";
 import handleRefresh from "./refresh";
+import { AuthConfig } from "@core/types";
+import { useServerSession } from "../session";
 
 const ROUTES = new Set(["csrf", "session", "signIn", "signOut", "refresh"]);
 
@@ -41,7 +41,8 @@ export async function authRequestHandler(
             case "csrf":
                 break;
             case "session":
-                break;
+                const session = await useServerSession(config);
+                return NextResponse.json(session);
             case "signOut":
                 // TODO: Fix redirecting issue
                 return await handleLogout(config);
