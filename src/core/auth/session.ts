@@ -6,25 +6,28 @@ import {
     ACCESS_TOKEN_DEFAULT_LIFESPAN,
     REFRESH_TOKEN_DEFAULT_LIFESPAN,
 } from "@lib/consts";
+import prisma from "@db/orm";
 import { AuthConfig } from "@core/types";
 import { Session } from "@core/types/auth";
-import { AccessTokenValidator } from "@lib/validators";
+import { AccessTokenValidator, RefreshTokenValidator } from "@lib/validators";
+
+type ServerSession = Session | null;
 
 export async function serverSession(
     config: AuthConfig,
-): Promise<Session | null> {
+): Promise<ServerSession> {
     const accessToken = cookies().get("accessToken");
-    const refreshToken = cookies().get("accessToken");
+    const refreshToken = cookies().get("refreshToken");
 
     if (!accessToken || !accessToken.value) {
-        return refresh(config, refreshToken);
+        return await refresh(config, refreshToken);
     }
 
     try {
         jwt.verify(accessToken.value, config.secrets.accessTokenSecret);
     } catch (err) {
         if (err instanceof TokenExpiredError) {
-            return refresh(config, refreshToken);
+            return await refresh(config, refreshToken);
         }
         return null;
     }
@@ -35,7 +38,7 @@ export async function serverSession(
     const tokenMalformed = parsedJWT.success === false;
 
     if (tokenMalformed) {
-        return refresh(config, refreshToken);
+        return await refresh(config, refreshToken);
     }
 
     const { data } = parsedJWT;
@@ -48,12 +51,10 @@ export async function serverSession(
     };
 }
 
-export function refresh(
+export async function refresh(
     config: AuthConfig,
     refreshToken: RequestCookie | undefined,
-) {
-    return null;
-}
+): Promise<ServerSession> {}
 
 export function issueTokens(config: AuthConfig, userData: Session) {
     const { id, name, email, image } = userData;
@@ -78,22 +79,6 @@ export function issueTokens(config: AuthConfig, userData: Session) {
 
     const refreshToken = jwt.sign({ id }, config.secrets.refreshTokenSecret, {
         expiresIn: refreshTokenLifespan,
-    });
-
-    cookies().set({
-        name: "accessToken",
-        value: accessToken,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: accessTokenLifespan,
-    });
-
-    cookies().set({
-        name: "refreshToken",
-        value: refreshToken,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: refreshTokenLifespan,
     });
 
     return { accessToken, refreshToken };

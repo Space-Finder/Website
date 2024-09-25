@@ -1,13 +1,24 @@
 import { Auth, google } from "googleapis";
+import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 
+import {
+    ACCESS_TOKEN_DEFAULT_LIFESPAN,
+    REFRESH_TOKEN_DEFAULT_LIFESPAN,
+} from "@lib/consts";
 import prisma from "@db/orm";
 import { issueTokens } from "./session";
 import { AuthConfig } from "@core/types";
 import { SCHOOL_DOMAIN } from "@lib/consts";
 
-const ROUTES = new Set(["csrf", "signOut", "session", "callback/google"]);
+const ROUTES = new Set([
+    "csrf",
+    "signOut",
+    "session",
+    "callback/google",
+    "refresh",
+]);
 
 interface UserProfile {
     id: string;
@@ -110,11 +121,32 @@ async function handleLogin(
         },
     });
 
-    issueTokens(config, {
+    const { accessToken, refreshToken } = issueTokens(config, {
         id: user.id,
         name: user.name,
         email: user.email,
         image: user.image,
+    });
+
+    const accessTokenLifespan =
+        config.token?.accessTokenLifespan || ACCESS_TOKEN_DEFAULT_LIFESPAN;
+    const refreshTokenLifespan =
+        config.token?.refreshTokenLifespan || REFRESH_TOKEN_DEFAULT_LIFESPAN;
+
+    cookies().set({
+        name: "accessToken",
+        value: accessToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: accessTokenLifespan,
+    });
+
+    cookies().set({
+        name: "refreshToken",
+        value: refreshToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: refreshTokenLifespan,
     });
 
     if (callbackURL) {
