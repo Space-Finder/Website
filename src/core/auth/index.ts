@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { AuthConfig } from "@core/types";
 import { login, logout } from "./actions";
 import { serverSession } from "./session";
-import { authRequestHandler } from "./handler";
+import { authRequestHandler } from "./http";
 
 const inDevelopmentMode = process.env.NODE_ENV == "development";
 
