@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 import { AuthConfig } from "@core/types";
 
 import handleLogin from "./signIn";
+import handleLogout from "./signOut";
 
 const ROUTES = new Set([
     "csrf",
@@ -32,6 +33,7 @@ export async function authRequestHandler(
 
     const { searchParams } = new URL(request.url);
 
+    console.log(request.method);
     if (request.method == "GET") {
         switch (route) {
             case "callback/google": // TODO: rename later to signIn once google allows
@@ -46,14 +48,15 @@ export async function authRequestHandler(
                 break;
             case "session":
                 break;
+            case "signOut":
+                // TODO: Fix redirecting issue
+                return await handleLogout(config);
         }
     } else if (request.method == "POST") {
         switch (route) {
             case "refresh":
                 //     const data = await request.json();
                 //     return await handleRefresh(config);
-                break;
-            case "signOut":
                 break;
         }
     }
