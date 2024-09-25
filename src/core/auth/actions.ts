@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { cookies } from "next/headers";
 import { AuthConfig } from "@core/types";
 import { SCHOOL_DOMAIN } from "@lib/consts";
 
@@ -22,4 +23,9 @@ export async function login(config: AuthConfig, callbackURL?: string) {
     await redirect(url);
 }
 
-export async function logout(config: AuthConfig) {}
+export async function logout(config: AuthConfig) {
+    cookies().delete("accessToken");
+    cookies().delete("refreshToken");
+
+    await redirect(config.pages?.signOut || "/");
+}
