@@ -1,16 +1,17 @@
 export type AuthConfig = {
-    pages?: {
-        newUser?: string;
-        signIn?: string;
-        signOut?: string;
+    pages: {
+        newUser: string;
+        signIn: string;
+        signOut: string;
     };
-    token?: {
-        accessTokenLifespan?: number;
-        refreshTokenLifespan?: number;
+    token: {
+        accessTokenLifespan: number;
+        refreshTokenLifespan: number;
     };
     secrets: {
         accessTokenSecret: string;
         refreshTokenSecret: string;
+        csrfTokenSecret: string;
     };
     google: {
         clientId: string;
