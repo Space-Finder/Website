@@ -11,7 +11,7 @@ import Logo from "/public/spacelogo.png";
 
 const Navbar = () => {
     const session = useSession();
-    const signedIn = session !== null;
+    const signedIn = session.status === "authenticated";
 
     return (
         <nav className="border-b-2 border-black">

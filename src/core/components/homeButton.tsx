@@ -6,7 +6,7 @@ import { useSession } from "@core/auth/provider";
 
 export default function HomepageButton() {
     const session = useSession();
-    const signedIn = session !== null;
+    const signedIn = session.status === "authenticated";
 
     if (signedIn) {
         return (
