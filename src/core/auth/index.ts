@@ -11,7 +11,7 @@ const NEW_USER_URL = inDevelopmentMode ? "/" : "/onboarding";
 
 const config = {
     pages: {
-        signIn: "/",
+        signIn: "/dashboard",
         signOut: "/",
         newUser: NEW_USER_URL,
     },
