@@ -1,7 +1,8 @@
-import { Auth, google } from "googleapis";
+import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
+import { Auth, google } from "googleapis";
 import { redirect } from "next/navigation";
+import { NextRequest, NextResponse } from "next/server";
 
 import {
     ACCESS_TOKEN_DEFAULT_LIFESPAN,
@@ -58,6 +59,11 @@ export async function authRequestHandler(
             code,
             searchParams.get("state"),
         );
+    }
+
+    if (request.method == "POST" && route == "refresh") {
+        const data = await request.json();
+        return await handleRefresh(config);
     }
 
     return redirect(config.errorURL);
@@ -137,6 +143,7 @@ async function handleLogin(
         name: "accessToken",
         value: accessToken,
         httpOnly: true,
+        path: "/",
         secure: process.env.NODE_ENV === "production",
         maxAge: accessTokenLifespan,
     });
@@ -145,6 +152,7 @@ async function handleLogin(
         name: "refreshToken",
         value: refreshToken,
         httpOnly: true,
+        path: "/",
         secure: process.env.NODE_ENV === "production",
         maxAge: refreshTokenLifespan,
     });
@@ -160,4 +168,72 @@ async function handleLogin(
 
     const redirectURL = config.pages?.signIn || "/";
     return redirect(redirectURL);
+}
+
+export async function handleRefresh(config: AuthConfig) {
+    const refreshToken = cookies().get("refreshToken");
+
+    if (!refreshToken || !refreshToken.value) {
+        return NextResponse.json(
+            { error: "Missing refresh token" },
+            { status: 401 },
+        );
+    }
+
+    let decoded;
+    try {
+        decoded = jwt.verify(
+            refreshToken.value,
+            config.secrets.refreshTokenSecret,
+        );
+    } catch (err) {
+        return NextResponse.json(
+            { error: "Invalid refresh token" },
+            { status: 403 },
+        );
+    }
+
+    const { id } = decoded as { id: string };
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Issue new tokens
+    const { accessToken, refreshToken: newRefreshToken } = issueTokens(config, {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+    });
+
+    const accessTokenLifespan = config.token?.accessTokenLifespan || 900; // 15 minutes
+    const refreshTokenLifespan = config.token?.refreshTokenLifespan || 604800; // 7 days
+
+    const response = NextResponse.json({
+        accessToken,
+        refreshToken: newRefreshToken,
+    });
+
+    // FIX THIS PART
+    response.cookies.set({
+        name: "accessToken",
+        value: accessToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: accessTokenLifespan,
+        path: "/",
+    });
+
+    response.cookies.set({
+        name: "refreshToken",
+        value: newRefreshToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: refreshTokenLifespan,
+        path: "/",
+    });
+
+    return response;
 }

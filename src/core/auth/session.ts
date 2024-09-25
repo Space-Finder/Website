@@ -1,15 +1,15 @@
+import axios from "axios";
 import { cookies } from "next/headers";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import type { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 import {
     ACCESS_TOKEN_DEFAULT_LIFESPAN,
     REFRESH_TOKEN_DEFAULT_LIFESPAN,
 } from "@lib/consts";
-import prisma from "@db/orm";
 import { AuthConfig } from "@core/types";
 import { Session } from "@core/types/auth";
-import { AccessTokenValidator, RefreshTokenValidator } from "@lib/validators";
+import { AccessTokenValidator } from "@lib/validators";
 
 type ServerSession = Session | null;
 
@@ -54,7 +54,46 @@ export async function serverSession(
 export async function refresh(
     config: AuthConfig,
     refreshToken: RequestCookie | undefined,
-): Promise<ServerSession> {}
+) {
+    if (!refreshToken) {
+        return null;
+    }
+    const response = await axios.post(
+        `${config.authBaseURL}/refresh`,
+        {
+            refreshToken: refreshToken.value,
+        },
+        {
+            withCredentials: true,
+            headers: {
+                "Content-Type": "application/json",
+                Cookie: `refreshToken=${refreshToken.value}`,
+            },
+        },
+    );
+
+    if (!response.data.accessToken) {
+        return null;
+    }
+
+    const parsedJWT = AccessTokenValidator.safeParse(
+        jwt.decode(response.data.accessToken),
+    );
+    const tokenMalformed = parsedJWT.success === false;
+
+    if (tokenMalformed) {
+        return null;
+    }
+
+    const { data } = parsedJWT;
+
+    return {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        image: data.image,
+    };
+}
 
 export function issueTokens(config: AuthConfig, userData: Session) {
     const { id, name, email, image } = userData;
