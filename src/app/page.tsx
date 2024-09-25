@@ -2,7 +2,7 @@ import React from "react";
 
 import HomepageButton from "@components/homeButton";
 
-const BACKGROUND_IMAGE = "/gradient.webp";
+const BACKGROUND_IMAGE = "/gradient.webp"; // TODO: Change this to proper divs or gradient
 
 export default function Home() {
     return (
