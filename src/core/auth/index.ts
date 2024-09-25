@@ -2,8 +2,8 @@ import { NextRequest } from "next/server";
 
 import { AuthConfig } from "@core/types";
 import { login, logout } from "./actions";
-import { serverSession } from "./session";
 import { authRequestHandler } from "./http";
+import { useServerSession } from "./session";
 
 const inDevelopmentMode = process.env.NODE_ENV == "development";
 
@@ -36,7 +36,7 @@ type handlerParam = { params: { route: string[] } };
 
 function Auth(config: AuthConfig) {
     return {
-        auth: async () => serverSession(config),
+        auth: async () => useServerSession(config),
         signIn: (callbackURL?: string) => login(config, callbackURL),
         signOut: () => logout(config),
         handlers: {
