@@ -8,13 +8,7 @@ import handleLogin from "./signIn";
 import handleLogout from "./signOut";
 import handleRefresh from "./refresh";
 
-const ROUTES = new Set([
-    "csrf",
-    "session",
-    "callback/google", // TODO:rename later to signIn once google allows
-    "signOut",
-    "refresh",
-]);
+const ROUTES = new Set(["csrf", "session", "signIn", "signOut", "refresh"]);
 
 export async function authRequestHandler(
     config: AuthConfig,
@@ -24,7 +18,7 @@ export async function authRequestHandler(
     const oauth2 = new google.auth.OAuth2({
         clientId: config.google.clientId,
         clientSecret: config.google.clientSecret,
-        redirectUri: `${config.authBaseURL}/callback/google`,
+        redirectUri: `${config.authBaseURL}/signIn`,
     });
 
     const route = params.route.join("/");
@@ -36,7 +30,7 @@ export async function authRequestHandler(
 
     if (request.method == "GET") {
         switch (route) {
-            case "callback/google": // TODO: rename later to signIn once google allows
+            case "signIn":
                 const code = searchParams.get("code");
                 return await handleLogin(
                     config,

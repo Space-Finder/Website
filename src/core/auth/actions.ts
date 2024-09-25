@@ -12,7 +12,7 @@ export async function login(config: AuthConfig, callbackURL?: string) {
         hd: SCHOOL_DOMAIN,
         response_type: "code",
         client_id: process.env.GOOGLE_CLIENT_ID,
-        redirect_uri: `${config.authBaseURL}/callback/google`,
+        redirect_uri: `${config.authBaseURL}/signIn`,
         state: callbackURL || "",
     });
 
