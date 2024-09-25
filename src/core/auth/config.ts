@@ -1,3 +1,5 @@
+import "server-only";
+
 import { AuthConfig } from "@core/types";
 
 const inDevelopmentMode = process.env.NODE_ENV == "development";
