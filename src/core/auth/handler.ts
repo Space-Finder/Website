@@ -4,9 +4,13 @@ import { Auth, google } from "googleapis";
 import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 
+import {
+    SCHOOL_DOMAIN,
+    ACCESS_TOKEN_DEFAULT_LIFESPAN,
+    REFRESH_TOKEN_DEFAULT_LIFESPAN,
+} from "@lib/consts";
 import prisma from "@db/orm";
 import { AuthConfig } from "@core/types";
-import { SCHOOL_DOMAIN } from "@lib/consts";
 
 const ROUTES = new Set(["csrf", "signOut", "session", "callback/google"]);
 
@@ -111,8 +115,10 @@ async function handleLogin(
         },
     });
 
-    const accessTokenLifespan = config.token?.accessTokenLifespan || 900;
-    const refreshTokenLifespan = config.token?.refreshTokenLifespan || 604800;
+    const accessTokenLifespan =
+        config.token?.accessTokenLifespan || ACCESS_TOKEN_DEFAULT_LIFESPAN;
+    const refreshTokenLifespan =
+        config.token?.refreshTokenLifespan || REFRESH_TOKEN_DEFAULT_LIFESPAN;
 
     const accessTokenData = {
         id: user.id,
