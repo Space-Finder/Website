@@ -1,7 +1,7 @@
 "use server";
 
-import { signIn, signOut } from "@auth";
+import { signIn } from "@auth";
 
-export async function signInOut(signedIn: boolean) {
-    return signedIn ? await signOut() : await signIn();
+export async function loginAction() {
+    return await signIn();
 }

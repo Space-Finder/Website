@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-import { signInOut } from "@lib/actions";
+import { loginAction } from "@lib/actions";
 import { useSession } from "@core/auth/provider";
 
 import Logo from "/public/spacelogo.png";
@@ -28,14 +28,25 @@ const Navbar = () => {
                     />
                 </div>
 
-                <form action={() => signInOut(signedIn)}>
+                {signedIn ? (
                     <button
                         className="rounded-xl bg-[#0B1328] px-14 py-3 text-xl text-white"
-                        type="submit"
+                        onClick={() => {
+                            window.location.href = "/api/auth/signOut";
+                        }}
                     >
-                        {signedIn ? "Logout" : "Login"}
+                        Logout
                     </button>
-                </form>
+                ) : (
+                    <form action={loginAction}>
+                        <button
+                            className="rounded-xl bg-[#0B1328] px-14 py-3 text-xl text-white"
+                            type="submit"
+                        >
+                            Login
+                        </button>
+                    </form>
+                )}
             </div>
         </nav>
     );

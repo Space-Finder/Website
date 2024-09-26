@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { signInOut } from "@lib/actions";
+
+import { loginAction } from "@lib/actions";
 import { useSession } from "@core/auth/provider";
 
 export default function HomepageButton() {
@@ -20,7 +21,7 @@ export default function HomepageButton() {
     }
     return (
         <button
-            onClick={() => signInOut(signedIn)}
+            onClick={loginAction}
             className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
         >
             Login

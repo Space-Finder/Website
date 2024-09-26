@@ -42,6 +42,7 @@ export default async function handleRefresh(config: AuthConfig) {
         name: user.name,
         email: user.email,
         image: user.image,
+        expiresAt: 0,
     });
 
     const response = NextResponse.json(tokens);

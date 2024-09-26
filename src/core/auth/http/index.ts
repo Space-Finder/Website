@@ -42,7 +42,6 @@ export async function authRequestHandler(
                 const session = await useServerSession(config);
                 return NextResponse.json(session);
             case "signOut":
-                // TODO: Fix redirecting issue
                 return await handleLogout(config);
         }
     } else if (request.method == "POST") {
