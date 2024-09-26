@@ -72,6 +72,7 @@ export default async function handleLogin(
         name: user.name,
         email: user.email,
         image: user.image,
+        role: user.role,
     });
 
     setCookies(config, cookies(), issuedTokens);

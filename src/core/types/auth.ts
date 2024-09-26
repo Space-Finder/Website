@@ -52,3 +52,5 @@ export type SessionContext = {
 };
 
 export type handlerParam = { params: { route: string[] } };
+
+export type TokenUserData = Omit<Session, "expiresAt">;

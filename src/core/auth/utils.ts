@@ -2,19 +2,20 @@ import { SignJWT } from "jose";
 import { addSeconds } from "date-fns";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
-import { AuthConfig, Session, Tokens } from "@core/types";
+import { AuthConfig, Tokens, TokenUserData } from "@core/types";
 
 export async function issueTokens(
     config: AuthConfig,
-    userData: Session,
+    userData: TokenUserData,
 ): Promise<Tokens> {
-    const { id, name, email, image } = userData;
+    const { id, name, email, image, role } = userData;
 
     const accessTokenData = {
         id,
         name,
         email,
         image,
+        role,
     };
 
     const encoder = new TextEncoder();

@@ -7,4 +7,5 @@ export type {
     SessionStatus,
     SessionContext,
     handlerParam,
+    TokenUserData
 } from "./auth";
