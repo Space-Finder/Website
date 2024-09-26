@@ -15,10 +15,18 @@ model User {
   name  String
   email String  @unique
   image String?
+  role  Role    @default(STUDENT)
 
   isOnboarded   Boolean @default(false) @map("is_onboarded")
   kamarPassword String? @map("kamar_password")
   isTeacher     Boolean @default(false) @map("is_teacher")
 
   @@map("users")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  LEADER
+  ADMIN
 }
