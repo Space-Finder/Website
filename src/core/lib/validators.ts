@@ -1,5 +1,12 @@
 import z from "zod";
 
+export const RoleValidator = z.union([
+    z.literal("STUDENT"),
+    z.literal("TEACHER"),
+    z.literal("LEADER"),
+    z.literal("ADMIN"),
+]);
+
 export const AccessTokenValidator = z.object({
     id: z.string(),
     name: z.string(),
@@ -7,6 +14,7 @@ export const AccessTokenValidator = z.object({
     image: z.string(),
     iat: z.number(),
     exp: z.number(),
+    role: RoleValidator,
 });
 
 export const RefreshTokenValidator = z.object({
