@@ -14,13 +14,13 @@ export default async function handleLogin(
     callbackURL: string | null,
 ) {
     if (!code) {
-        return redirect(config.errorURL);
+        return redirect(`${config.errorURL}?type=InvalidCode`);
     }
 
     const { tokens } = await client.getToken(code);
 
     if (!tokens || !tokens.access_token) {
-        return redirect(config.errorURL);
+        return redirect(`${config.errorURL}?type=InvalidCode`);
     }
 
     client.setCredentials(tokens);
@@ -31,18 +31,18 @@ export default async function handleLogin(
     });
 
     if (userProfile.status !== 200) {
-        return redirect(config.errorURL);
+        return redirect(`${config.errorURL}?type=CouldNotFetch`);
     }
 
     const { data } = userProfile as { data: UserProfile };
     const { id, name, email, picture } = data;
 
     if (!name || !email) {
-        return redirect(config.errorURL);
+        return redirect(`${config.errorURL}?type=CouldNotFetch`);
     }
 
     if (!email.endsWith("@" + SCHOOL_DOMAIN)) {
-        return redirect(config.errorURL);
+        return redirect(`${config.errorURL}?type=NotSchoolEmail`);
     }
 
     const isNewUser = !Boolean(
