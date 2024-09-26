@@ -6,8 +6,7 @@ import { authRequestHandler } from "./http";
 import { useServerSession } from "./session";
 
 import AUTH_CONFIG from "./config";
-
-type handlerParam = { params: { route: string[] } };
+import { handlerParam } from "@core/types";
 
 function Auth(config: AuthConfig) {
     return {

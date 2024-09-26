@@ -2,12 +2,7 @@ import { SignJWT } from "jose";
 import { addSeconds } from "date-fns";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
-import { AuthConfig, Session } from "@core/types";
-
-interface Tokens {
-    accessToken: string;
-    refreshToken: string;
-}
+import { AuthConfig, Session, Tokens } from "@core/types";
 
 export async function issueTokens(
     config: AuthConfig,

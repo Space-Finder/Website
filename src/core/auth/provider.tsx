@@ -9,20 +9,15 @@ import React, {
 } from "react";
 import axios from "axios";
 
-import { Session } from "@core/types";
-
-type SessionStatus = "authenticated" | "unauthenticated" | "loading";
-
-type SessionContext = {
-    session: Session | null;
-    status: SessionStatus;
-    setSession: React.Dispatch<React.SetStateAction<Session | null>>;
-    refreshSession: () => Promise<void>;
-};
+import {
+    Session,
+    SessionStatus,
+    SessionContext as SessionContextT,
+} from "@core/types";
 
 const EXPIRY = 15 * 60 * 1000; // 15 minutes to ms
 
-export const SessionContext = createContext<SessionContext | null>(null);
+export const SessionContext = createContext<SessionContextT | null>(null);
 
 export default function SessionContextProvider({
     value,
@@ -121,7 +116,7 @@ export default function SessionContextProvider({
     );
 }
 
-export function useSession(): SessionContext {
+export function useSession(): SessionContextT {
     const context = useContext(SessionContext);
     if (!context) {
         throw new Error(

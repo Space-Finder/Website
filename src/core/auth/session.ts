@@ -2,10 +2,9 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
 import { AuthConfig } from "@core/types";
-import { Session } from "@core/types/auth";
 import { AccessTokenValidator } from "@lib/validators";
 
-type ServerSession = Session | null;
+import { ServerSession } from "@core/types";
 
 export async function useServerSession(
     config: AuthConfig,
@@ -42,5 +41,6 @@ export async function useServerSession(
         email: data.email,
         image: data.image,
         expiresAt: data.exp,
+        role: data.role,
     };
 }
