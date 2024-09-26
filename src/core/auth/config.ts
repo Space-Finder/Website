@@ -1,8 +1,8 @@
 import "server-only";
 
 import { AuthConfig } from "@core/types";
+import { inDevelopmentMode } from "@lib/consts";
 
-const inDevelopmentMode = process.env.NODE_ENV == "development";
 const NEW_USER_URL = inDevelopmentMode ? "/" : "/onboarding";
 
 const AUTH_CONFIG = {
