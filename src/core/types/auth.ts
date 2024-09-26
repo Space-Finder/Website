@@ -25,4 +25,5 @@ export type Session = {
     name: string;
     email: string;
     image: string | null;
+    expiresAt: number;
 };

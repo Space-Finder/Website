@@ -41,5 +41,6 @@ export async function useServerSession(
         name: data.name,
         email: data.email,
         image: data.image,
+        expiresAt: data.exp,
     };
 }
