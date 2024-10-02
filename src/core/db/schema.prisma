@@ -9,19 +9,120 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  googleId String @unique @map("google_id")
+  id          String  @id @unique @default(cuid())
+  googleId    String  @unique
+  name        String
+  email       String  @unique
+  image       String?
+  role        Role    @default(STUDENT)
+  isOnboarded Boolean @default(false)
+  isTeacher   Boolean @default(false)
 
-  name  String
-  email String  @unique
-  image String?
-  role  Role    @default(STUDENT)
+  teachers Teacher[]
+}
 
-  isOnboarded   Boolean @default(false) @map("is_onboarded")
-  kamarPassword String? @map("kamar_password")
-  isTeacher     Boolean @default(false) @map("is_teacher")
+model Teacher {
+  id    String @id @unique @default(cuid())
+  code  String @unique
+  email String @unique
 
-  @@map("users")
+  userId   String
+  commonId String
+
+  user    User     @relation(fields: [userId], references: [id])
+  common  Common   @relation(fields: [commonId], references: [id])
+  courses Course[]
+}
+
+model Course {
+  id   String @id @unique @default(cuid())
+  code String
+  name String
+  line Int
+  year Year
+
+  teacherId String
+  commonId  String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  common  Common  @relation(fields: [commonId], references: [id])
+}
+
+model Common {
+  id             String @id @unique @default(cuid())
+  name           String @unique
+  primaryColor   String
+  secondaryColor String
+
+  teachers Teacher[]
+  courses  Course[]
+  spaces   Space[]
+}
+
+model Space {
+  id   String @id @unique @default(cuid())
+  name String
+
+  commonId String
+
+  common Common @relation(fields: [commonId], references: [id])
+}
+
+model Period {
+  id            String         @id @unique @default(cuid())
+  startTime     String
+  endTime       String
+  periodType    PeriodType
+  name          String?
+  line          Int?
+  dayTimetables DayTimetable[] @relation("DayTimetablePeriods")
+}
+
+model DayTimetable {
+  id      String   @id @unique @default(cuid())
+  name    String   @unique
+  periods Period[] @relation("DayTimetablePeriods")
+
+  mondayOf    WeekTimetable[] @relation("MondayRelation")
+  tuesdayOf   WeekTimetable[] @relation("TuesdayRelation")
+  wednesdayOf WeekTimetable[] @relation("WednesdayRelation")
+  thursdayOf  WeekTimetable[] @relation("ThursdayRelation")
+  fridayOf    WeekTimetable[] @relation("FridayRelation")
+}
+
+model WeekTimetable {
+  id   String @id @unique @default(cuid())
+  name String @unique
+
+  mondayId    String
+  tuesdayId   String
+  wednesdayId String
+  thursdayId  String
+  fridayId    String
+
+  monday    DayTimetable @relation("MondayRelation", fields: [mondayId], references: [id], onDelete: Cascade)
+  tuesday   DayTimetable @relation("TuesdayRelation", fields: [tuesdayId], references: [id], onDelete: Cascade)
+  wednesday DayTimetable @relation("WednesdayRelation", fields: [wednesdayId], references: [id], onDelete: Cascade)
+  thursday  DayTimetable @relation("ThursdayRelation", fields: [thursdayId], references: [id], onDelete: Cascade)
+  friday    DayTimetable @relation("FridayRelation", fields: [fridayId], references: [id], onDelete: Cascade)
+
+  weeks Week[]
+}
+
+model Week {
+  id     String @id @unique @default(cuid())
+  number Int
+  year   Int
+
+  weekTimetableId String?
+  weekTimetable   WeekTimetable? @relation(fields: [weekTimetableId], references: [id], onDelete: Cascade)
+}
+
+enum PeriodType {
+  CLASS
+  BREAK
+  LA
+  CUSTOM
 }
 
 enum Role {
@@ -29,4 +130,10 @@ enum Role {
   TEACHER
   LEADER
   ADMIN
+}
+
+enum Year {
+  Y11
+  Y12
+  Y13
 }
