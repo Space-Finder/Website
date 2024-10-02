@@ -8,6 +8,7 @@ import React, {
     useCallback,
 } from "react";
 import axios from "axios";
+import { decodeJwt } from "jose";
 
 import {
     Session,
@@ -58,7 +59,7 @@ export default function SessionContextProvider({
                 { withCredentials: true },
             );
             if (response.data) {
-                setSession(response.data);
+                setSession(decodeJwt(response.data.accessToken));
                 setStatus("authenticated");
             }
         } catch (error) {
