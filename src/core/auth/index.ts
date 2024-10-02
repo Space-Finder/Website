@@ -1,16 +1,15 @@
+import { cache } from "react";
 import { NextRequest } from "next/server";
 
-import { AuthConfig } from "@core/types";
+import AUTH_CONFIG from "./config";
 import { login, logout } from "./actions";
 import { authRequestHandler } from "./http";
 import { useServerSession } from "./session";
-
-import AUTH_CONFIG from "./config";
-import { handlerParam } from "@core/types";
+import { handlerParam, AuthConfig } from "@core/types";
 
 function Auth(config: AuthConfig) {
     return {
-        auth: async () => useServerSession(config),
+        auth: cache(async () => useServerSession(config)),
         signIn: (callbackURL?: string) => login(config, callbackURL),
         signOut: () => logout(config),
         handlers: {
