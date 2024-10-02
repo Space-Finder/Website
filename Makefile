@@ -1,8 +1,8 @@
 all:
-	@pnpm run build && pnpm run start
-
-dev:
 	@pnpm run dev
+
+run:
+	@pnpm run build && pnpm run start
 
 format:
 	@pnpm run format
