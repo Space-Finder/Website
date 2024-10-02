@@ -45,12 +45,6 @@ export default async function handleLogin(
         return redirect(`${config.errorURL}?type=NotSchoolEmail`);
     }
 
-    const isNewUser = !Boolean(
-        await prisma.user.count({
-            where: { googleId: id },
-        }),
-    );
-
     // create new user or just update existing one
     const user = await prisma.user.upsert({
         where: { googleId: id },
@@ -77,12 +71,12 @@ export default async function handleLogin(
 
     setCookies(config, cookies(), issuedTokens);
 
-    if (callbackURL) {
-        return redirect(callbackURL);
+    if (!user.isOnboarded) {
+        return redirect(config.pages.newUser);
     }
 
-    if (isNewUser) {
-        return redirect(config.pages.newUser);
+    if (callbackURL) {
+        return redirect(callbackURL);
     }
 
     return redirect(config.pages.signIn);
