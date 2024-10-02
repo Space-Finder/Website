@@ -116,7 +116,7 @@ export default function SessionContextProvider({
                 clearInterval(intervalId);
             }
         };
-    }, [session, fetchSession, refreshSession]);
+    }, [fetchSession, refreshSession]);
 
     return (
         <SessionContext.Provider
