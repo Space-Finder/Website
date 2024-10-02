@@ -14,10 +14,11 @@ import {
     SessionStatus,
     SessionContext as SessionContextT,
 } from "@core/types";
-
-const EXPIRY = 15 * 60 * 1000; // 15 minutes to ms
+import { ACCESS_TOKEN_EXPIRY } from "@lib/consts";
 
 export const SessionContext = createContext<SessionContextT | null>(null);
+
+const ms = (v: number) => v * 1000;
 
 export default function SessionContextProvider({
     value,
@@ -70,42 +71,44 @@ export default function SessionContextProvider({
     useEffect(() => {
         if (value === null) {
             fetchSession();
-        } else {
-            setSession(value);
-            setStatus("authenticated");
+            return;
         }
+
+        setSession(value);
+        setStatus("authenticated");
     }, [value, fetchSession]);
 
     useEffect(() => {
-        if (value === null) {
-            fetchSession();
-        } else {
-            setSession(value);
-            setStatus("authenticated");
-
-            const initialExpiresIn = value.expiresAt;
-
-            if (initialExpiresIn) {
-                const timeUntilExpiry =
-                    (initialExpiresIn - new Date().getTime()) / 1000;
-
-                const firstRefreshTime = Math.min(timeUntilExpiry - 60, EXPIRY);
-
-                const firstTimeoutId = setTimeout(() => {
-                    refreshSession();
-                }, firstRefreshTime * 1000);
-
-                const intervalId = setInterval(() => {
-                    refreshSession();
-                }, EXPIRY);
-
-                return () => {
-                    clearTimeout(firstTimeoutId);
-                    clearInterval(intervalId);
-                };
-            }
+        if (session === null) {
+            return;
         }
-    }, [value, fetchSession, refreshSession]);
+
+        setSession(session);
+        setStatus("authenticated");
+
+        const initialExpiresIn = session.expiresAt;
+
+        const timeUntilExpiry =
+            (initialExpiresIn - new Date().getTime()) / 1000;
+
+        const firstRefreshTime = Math.min(
+            timeUntilExpiry - 60,
+            ms(ACCESS_TOKEN_EXPIRY),
+        );
+
+        const firstTimeoutId = setTimeout(() => {
+            refreshSession();
+        }, ms(firstRefreshTime));
+
+        const intervalId = setInterval(() => {
+            refreshSession();
+        }, ms(ACCESS_TOKEN_EXPIRY));
+
+        return () => {
+            clearTimeout(firstTimeoutId);
+            clearInterval(intervalId);
+        };
+    }, [session, fetchSession, refreshSession]);
 
     return (
         <SessionContext.Provider
