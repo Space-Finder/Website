@@ -45,11 +45,18 @@ export interface Tokens {
 export type SessionStatus = "authenticated" | "unauthenticated" | "loading";
 
 export type SessionContext = {
-    data: Session | null;
-    status: SessionStatus;
     setSession: React.Dispatch<React.SetStateAction<Session | null>>;
     refreshSession: () => Promise<void>;
-};
+} & (
+    | {
+          status: "authenticated";
+          data: Session;
+      }
+    | {
+          status: "unauthenticated" | "loading";
+          data: null;
+      }
+);
 
 export type handlerParam = { params: { route: string[] } };
 

@@ -120,7 +120,14 @@ export default function SessionContextProvider({
 
     return (
         <SessionContext.Provider
-            value={{ data: session, status, setSession, refreshSession }}
+            value={
+                {
+                    data: session,
+                    status,
+                    setSession,
+                    refreshSession,
+                } as SessionContextT
+            }
         >
             {children}
         </SessionContext.Provider>
