@@ -83,30 +83,38 @@ export default function SessionContextProvider({
             return;
         }
 
-        setSession(session);
-        setStatus("authenticated");
-
         const initialExpiresIn = session.expiresAt;
 
         const timeUntilExpiry =
             (initialExpiresIn - new Date().getTime()) / 1000;
 
         const firstRefreshTime = Math.min(
-            timeUntilExpiry - 60,
-            ms(ACCESS_TOKEN_EXPIRY),
+            timeUntilExpiry - 60, // try to refresh a min before expiring
+            ACCESS_TOKEN_EXPIRY,
         );
 
-        const firstTimeoutId = setTimeout(() => {
+        let intervalId: NodeJS.Timeout;
+        const refreshSessionInterval = () => {
             refreshSession();
-        }, ms(firstRefreshTime));
 
-        const intervalId = setInterval(() => {
-            refreshSession();
-        }, ms(ACCESS_TOKEN_EXPIRY));
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+            intervalId = setInterval(() => {
+                refreshSession();
+            }, ms(ACCESS_TOKEN_EXPIRY));
+        };
+
+        const firstTimeoutId = setTimeout(
+            refreshSessionInterval,
+            ms(firstRefreshTime),
+        );
 
         return () => {
             clearTimeout(firstTimeoutId);
-            clearInterval(intervalId);
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
         };
     }, [session, fetchSession, refreshSession]);
 
