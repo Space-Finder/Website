@@ -5,6 +5,8 @@ import { AuthConfig } from "@core/types";
 import { AccessTokenValidator } from "@lib/validators";
 
 import { ServerSession } from "@core/types";
+import axios from "axios";
+import { decodeJwt } from "jose";
 
 export async function useServerSession(
     config: AuthConfig,
@@ -13,8 +15,35 @@ export async function useServerSession(
     const accessToken = cookies().get("accessToken");
 
     if (!accessToken || !accessToken.value) {
-        return null;
+        // even though access token doesnt exist, check if refresh token does
+        const refreshToken = cookies().get("refreshToken");
+        if (!refreshToken?.value) {
+            return null;
+        }
+
+        try {
+            // if it exists refresh the token and return the new session
+            const response = await axios.post(
+                `${config.authBaseURL}/refresh`,
+                {},
+                {
+                    headers: {
+                        Cookie: `refreshToken=${refreshToken.value}`,
+                    },
+                },
+            );
+
+            if (!response.data) {
+                return null;
+            }
+
+            return decodeJwt(response.data.accessToken);
+        } catch (error) {
+            return null;
+        }
     }
+
+    // if access token does exist:
 
     let decoded;
     try {
