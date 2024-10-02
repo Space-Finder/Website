@@ -45,7 +45,7 @@ export interface Tokens {
 export type SessionStatus = "authenticated" | "unauthenticated" | "loading";
 
 export type SessionContext = {
-    session: Session | null;
+    data: Session | null;
     status: SessionStatus;
     setSession: React.Dispatch<React.SetStateAction<Session | null>>;
     refreshSession: () => Promise<void>;
