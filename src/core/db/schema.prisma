@@ -10,15 +10,17 @@ datasource db {
 
 model User {
   id          String  @id @unique @default(cuid())
-  googleId    String  @unique
+  googleId    String  @unique @map("google_id")
   name        String
   email       String  @unique
   image       String?
   role        Role    @default(STUDENT)
-  isOnboarded Boolean @default(false)
-  isTeacher   Boolean @default(false)
+  isOnboarded Boolean @default(false) @map("is_onboarded")
+  isTeacher   Boolean @default(false) @map("is_teacher")
 
   teachers Teacher[]
+
+  @@map("users")
 }
 
 model Teacher {
@@ -26,12 +28,14 @@ model Teacher {
   code  String @unique
   email String @unique
 
-  userId   String
-  commonId String
+  userId   String? @map("user_id")
+  commonId String  @map("common_id")
 
-  user    User     @relation(fields: [userId], references: [id])
+  user    User?    @relation(fields: [userId], references: [id])
   common  Common   @relation(fields: [commonId], references: [id])
   courses Course[]
+
+  @@map("teachers")
 }
 
 model Course {
@@ -41,41 +45,49 @@ model Course {
   line Int
   year Year
 
-  teacherId String
-  commonId  String
+  teacherId String @map("teacher_id")
+  commonId  String @map("common_id")
 
   teacher Teacher @relation(fields: [teacherId], references: [id])
   common  Common  @relation(fields: [commonId], references: [id])
+
+  @@map("courses")
 }
 
 model Common {
   id             String @id @unique @default(cuid())
   name           String @unique
-  primaryColor   String
-  secondaryColor String
+  primaryColor   String @map("primary_color")
+  secondaryColor String @map("secondary_color")
 
   teachers Teacher[]
   courses  Course[]
   spaces   Space[]
+
+  @@map("commons")
 }
 
 model Space {
   id   String @id @unique @default(cuid())
   name String
 
-  commonId String
+  commonId String @map("common_id")
 
   common Common @relation(fields: [commonId], references: [id])
+
+  @@map("spaces")
 }
 
 model Period {
   id            String         @id @unique @default(cuid())
-  startTime     String
-  endTime       String
-  periodType    PeriodType
+  startTime     String         @map("start_time")
+  endTime       String         @map("end_time")
+  periodType    PeriodType     @map("period_type")
   name          String?
   line          Int?
   dayTimetables DayTimetable[] @relation("DayTimetablePeriods")
+
+  @@map("periods")
 }
 
 model DayTimetable {
@@ -88,17 +100,19 @@ model DayTimetable {
   wednesdayOf WeekTimetable[] @relation("WednesdayRelation")
   thursdayOf  WeekTimetable[] @relation("ThursdayRelation")
   fridayOf    WeekTimetable[] @relation("FridayRelation")
+
+  @@map("day_timetables")
 }
 
 model WeekTimetable {
   id   String @id @unique @default(cuid())
   name String @unique
 
-  mondayId    String
-  tuesdayId   String
-  wednesdayId String
-  thursdayId  String
-  fridayId    String
+  mondayId    String @map("monday_id")
+  tuesdayId   String @map("tuesday_id")
+  wednesdayId String @map("wednesday_id")
+  thursdayId  String @map("thursday_id")
+  fridayId    String @map("friday_id")
 
   monday    DayTimetable @relation("MondayRelation", fields: [mondayId], references: [id], onDelete: Cascade)
   tuesday   DayTimetable @relation("TuesdayRelation", fields: [tuesdayId], references: [id], onDelete: Cascade)
@@ -107,6 +121,8 @@ model WeekTimetable {
   friday    DayTimetable @relation("FridayRelation", fields: [fridayId], references: [id], onDelete: Cascade)
 
   weeks Week[]
+
+  @@map("week_timetables")
 }
 
 model Week {
@@ -114,8 +130,10 @@ model Week {
   number Int
   year   Int
 
-  weekTimetableId String?
+  weekTimetableId String?        @map("week_timetable_id")
   weekTimetable   WeekTimetable? @relation(fields: [weekTimetableId], references: [id], onDelete: Cascade)
+
+  @@map("weeks")
 }
 
 enum PeriodType {
