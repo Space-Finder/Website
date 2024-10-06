@@ -11,14 +11,25 @@ export default function HomepageButton() {
 
     if (signedIn) {
         return (
-            <Link
-                className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
-                href="/dashboard"
-            >
-                Go To Dashboard
-            </Link>
+            <div className="flex gap-5">
+                <Link
+                    className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
+                    href="/dashboard"
+                >
+                    Go To Dashboard
+                </Link>
+                {session.data.role === "ADMIN" && (
+                    <Link
+                        className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
+                        href="/admin"
+                    >
+                        Go To Admin Panel
+                    </Link>
+                )}
+            </div>
         );
     }
+
     return (
         <button
             onClick={loginAction}
