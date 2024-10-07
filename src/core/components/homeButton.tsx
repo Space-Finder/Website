@@ -31,11 +31,10 @@ export default function HomepageButton() {
     }
 
     return (
-        <button
-            onClick={loginAction}
-            className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
-        >
-            Login
-        </button>
+        <form action={loginAction}>
+            <button className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white">
+                Login
+            </button>
+        </form>
     );
 }
