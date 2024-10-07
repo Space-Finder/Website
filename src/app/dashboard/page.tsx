@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { useSession } from "@core/auth/provider";
+import { useSession } from "@hooks/session";
 
 const Page = () => {
     const session = useSession();

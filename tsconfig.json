@@ -22,6 +22,7 @@
             "@db/*": ["./src/core/db/*"],
             "@auth": ["./src/core/auth/"],
             "@lib/*": ["./src/core/lib/*"],
+            "@hooks/*": ["./src/core/hooks/*"],
             "@core/*": ["./src/core/*"],
             "@/*": ["./src/*"]
         }

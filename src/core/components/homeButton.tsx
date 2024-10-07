@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { loginAction } from "@lib/actions";
-import { useSession } from "@core/auth/provider";
+import { useSession } from "@hooks/session";
 
 export default function HomepageButton() {
     const session = useSession();

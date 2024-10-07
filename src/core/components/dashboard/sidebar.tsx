@@ -12,7 +12,7 @@ import {
     faCalendarCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { useSession } from "@core/auth/provider";
+import { useSession } from "@hooks/session";
 
 const DEFAULT_PROFILE_PICTURE =
     "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";

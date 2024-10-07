@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { loginAction } from "@lib/actions";
-import { useSession } from "@core/auth/provider";
+import { useSession } from "@hooks/session";
 
 import Logo from "/public/spacelogo.png";
 

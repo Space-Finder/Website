@@ -1,14 +1,8 @@
 "use client";
 
-import React, {
-    createContext,
-    useContext,
-    useState,
-    useEffect,
-    useCallback,
-} from "react";
 import axios from "axios";
 import { decodeJwt } from "jose";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 
 import {
     Session,
@@ -133,15 +127,4 @@ export default function SessionContextProvider({
             {children}
         </SessionContext.Provider>
     );
-}
-
-export function useSession(): SessionContextT {
-    const context = useContext(SessionContext);
-    if (!context) {
-        throw new Error(
-            "useSession must be used within a SessionContextProvider",
-        );
-    }
-
-    return context;
 }
