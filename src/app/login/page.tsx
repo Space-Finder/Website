@@ -1,15 +1,22 @@
 import React from "react";
+import { redirect } from "next/navigation";
 
-import { signIn } from "@auth";
+import { signIn, auth } from "@auth";
 import { SCHOOL_DOMAIN } from "@lib/consts";
 
-const Login = ({
+const Login = async ({
     searchParams,
 }: {
     searchParams: { callbackUrl: string | undefined };
 }) => {
     // find the url to redirect the user to after they login, if not found default to dashboard
     const redirectTo = searchParams.callbackUrl ?? "/dashboard";
+
+    const session = await auth();
+    if (session) {
+        // if already signed in, redirect back to where they were
+        await redirect(redirectTo);
+    }
 
     return (
         <div className="container mx-auto flex min-h-[calc(100vh-200px)] items-center">
