@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import { auth } from "@core/auth";
+import { auth } from "@auth";
 import Logo from "/public/spacelogo.png";
 import DashboardSidebar from "@components/dashboard/sidebar";
 

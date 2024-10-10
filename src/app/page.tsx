@@ -4,6 +4,11 @@ import HomepageButton from "@components/homeButton";
 
 const BACKGROUND_IMAGE = "/gradient.webp"; // TODO: Change this to proper divs or gradient
 
+export const metadata = {
+    title: "Space Finder | Home",
+    description: "Classroom Allocation Made Simple",
+};
+
 export default function Home() {
     return (
         <div>

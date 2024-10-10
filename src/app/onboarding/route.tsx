@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 
+import { auth } from "@auth";
 import prisma from "@db/orm";
-import { auth } from "@core/auth";
 
 export async function GET(request: NextRequest) {
     const user = await getUser();
