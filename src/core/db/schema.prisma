@@ -71,9 +71,9 @@ model Space {
   id   String @id @unique @default(cuid())
   name String
 
-  commonId String @map("common_id")
+  commonId String? @map("common_id")
 
-  common Common @relation(fields: [commonId], references: [id])
+  common Common? @relation(fields: [commonId], references: [id])
 
   @@map("spaces")
 }
