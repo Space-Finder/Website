@@ -1,6 +1,8 @@
 import { Period } from "@prisma/client";
 
-export type WeekPeriods = [Period[], Period[], Period[], Period[], Period[]];
+export type FiveOf<T> = [T, T, T, T, T];
+
+export type WeekPeriods = FiveOf<Period[]>;
 
 export type TimetableEvent = {
     title: string | React.JSX.Element;
