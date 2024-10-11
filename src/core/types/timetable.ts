@@ -2,7 +2,7 @@ import { Period } from "@prisma/client";
 
 export type WeekPeriods = [Period[], Period[], Period[], Period[], Period[]];
 
-export type TimetableEventProps = {
+export type TimetableEvent = {
     title: string | React.JSX.Element;
     description: string | React.JSX.Element | null;
     borderColor: string;
@@ -19,3 +19,5 @@ export type TimetableEventProps = {
           url: string;
       }
 );
+
+export type TimetableEventProps = { totalHeight: number } & TimetableEvent;
