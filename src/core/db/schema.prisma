@@ -28,7 +28,7 @@ model Teacher {
   code  String @unique
   email String @unique
 
-  userId   String? @map("user_id")
+  userId   String? @unique @map("user_id")
   commonId String  @map("common_id")
 
   user    User?    @relation(fields: [userId], references: [id])
