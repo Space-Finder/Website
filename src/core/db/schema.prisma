@@ -105,8 +105,9 @@ model DayTimetable {
 }
 
 model WeekTimetable {
-  id   String @id @unique @default(cuid())
-  name String @unique
+  id      String  @id @unique @default(cuid())
+  name    String  @unique
+  default Boolean @default(false)
 
   mondayId    String @map("monday_id")
   tuesdayId   String @map("tuesday_id")
