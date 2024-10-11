@@ -54,17 +54,16 @@ export function calculatePosition(
     totalHeight: number,
 ): { top: number; height: number; duration: number } {
     const MARGIN = 3;
+    const HOURS = HOURS_IN_DAY - 1;
 
     const [startHour, startMinute] = start.split(":").map(Number);
     const [endHour, endMinute] = end.split(":").map(Number);
 
-    const pixelsPerHour = totalHeight / HOURS_IN_DAY;
+    const pixelsPerHour = totalHeight / HOURS;
 
     // Calculate start and end positions in pixels
-    const startInHours = startHour + startMinute / 60;
-    const endInHours = endHour + endMinute / 60;
-
-    const duration = Math.round(60 * (endInHours - startInHours));
+    const startInHours = startHour + startMinute / 60 - HOURS;
+    const endInHours = endHour + endMinute / 60 - HOURS;
 
     const topOffset = startInHours * pixelsPerHour;
     const endOffset = endInHours * pixelsPerHour;
@@ -72,8 +71,11 @@ export function calculatePosition(
     // Calculate height and ensure it doesn't go below zero
     const height = Math.max(endOffset - topOffset - MARGIN, 0);
 
+    // duration of the period (in minutes)
+    const duration = Math.round(60 * (endInHours - startInHours));
+
     return {
-        top: topOffset,
+        top: pixelsPerHour + topOffset,
         height,
         duration,
     };
