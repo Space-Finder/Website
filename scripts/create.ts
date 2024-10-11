@@ -262,13 +262,13 @@ async function create_default_timetable(prisma: PrismaClient) {
 
         for (let period of PERIODS[i]) {
             const periodType: any = periodTypeMap.get(
-                period.type.toLowerCase(),
+                period.periodType.toLowerCase(),
             );
 
             await prisma.period.create({
                 data: {
-                    startTime: period.start,
-                    endTime: period.end,
+                    startTime: period.startTime,
+                    endTime: period.endTime,
                     periodType,
                     name: period.name || null,
                     line: period.line || null,
