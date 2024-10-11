@@ -5,7 +5,7 @@ import { calculatePosition } from "@lib/times";
 import { TimetableEventProps } from "@core/types/timetable";
 
 // how long the period has to be (in min) for there to be space to show the time
-const THRESHOLD_TO_SHOW_TIME = 45;
+const THRESHOLD_TO_SHOW_TIME = 30;
 
 const TimetableEvent = (props: TimetableEventProps) => {
     const formattedStart = formatTime(props.startTime);
