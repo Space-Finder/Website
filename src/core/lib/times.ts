@@ -52,7 +52,7 @@ export function calculatePosition(
     start: string,
     end: string,
     totalHeight: number,
-): { top: string; height: string } {
+): { top: number; height: number; duration: number } {
     const MARGIN = 3;
 
     const [startHour, startMinute] = start.split(":").map(Number);
@@ -64,6 +64,8 @@ export function calculatePosition(
     const startInHours = startHour + startMinute / 60;
     const endInHours = endHour + endMinute / 60;
 
+    const duration = Math.round(60 * (endInHours - startInHours));
+
     const topOffset = startInHours * pixelsPerHour;
     const endOffset = endInHours * pixelsPerHour;
 
@@ -71,8 +73,9 @@ export function calculatePosition(
     const height = Math.max(endOffset - topOffset - MARGIN, 0);
 
     return {
-        top: `${topOffset}px`,
-        height: `${height}px`,
+        top: topOffset,
+        height,
+        duration,
     };
 }
 
