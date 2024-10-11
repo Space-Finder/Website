@@ -62,8 +62,9 @@ const TimetableData = (props: {
                                 </h1>
 
                                 {/* render all events for that day */}
-                                {props.events[idx].map((event) => (
+                                {props.events[idx].map((event, event_idx) => (
                                     <TimetableEvent
+                                        key={event_idx}
                                         {...event}
                                         totalHeight={timeSlotsHeight}
                                     />
