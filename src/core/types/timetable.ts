@@ -1,4 +1,15 @@
-import { Period } from "@prisma/client";
+export type Period = {
+    id: string;
+    startTime: string;
+    endTime: string;
+} & (
+    | {
+          periodType: "CLASS";
+          line: number;
+      }
+    | { periodType: "BREAK" }
+    | { periodType: "CUSTOM" | "LA"; name: string }
+);
 
 export type FiveOf<T> = [T, T, T, T, T];
 
