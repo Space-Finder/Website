@@ -127,9 +127,10 @@ model WeekTimetable {
 }
 
 model Week {
-  id     String @id @unique @default(cuid())
-  number Int
-  year   Int
+  id        String @id @unique @default(cuid())
+  number    Int
+  year      Int // what year it is eg 2023, 2024 etc
+  yearGroup Year // what actual year group this corresponds to eg year 11 or year 12
 
   weekTimetableId String?        @map("week_timetable_id")
   weekTimetable   WeekTimetable? @relation(fields: [weekTimetableId], references: [id], onDelete: Cascade)
