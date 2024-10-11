@@ -1,4 +1,19 @@
+import { getISOWeek } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
+
+import { PERIODS } from "./old_periods";
 import { PrismaClient } from "@prisma/client";
+
+export function getWeek(date?: Date): number {
+    const timeZone = "Pacific/Auckland";
+
+    if (!date) {
+        date = new Date();
+    }
+
+    const d = toZonedTime(date, timeZone);
+    return getISOWeek(d);
+}
 
 async function create_commons_and_spaces(prisma: PrismaClient) {
     const commons = [
@@ -202,12 +217,91 @@ async function create_courses(prisma: PrismaClient) {
     console.log("All courses have been created!");
 }
 
+async function create_default_timetable(prisma: PrismaClient) {
+    const weekTimetable = await prisma.weekTimetable.create({
+        data: {
+            name: "Default",
+            monday: { create: { name: "Default Monday" } },
+            tuesday: { create: { name: "Default Tuesday" } },
+            wednesday: { create: { name: "Default Wednesday" } },
+            thursday: { create: { name: "Default Thursday" } },
+            friday: { create: { name: "Default Friday" } },
+        },
+    });
+
+    await prisma.weekTimetable.create({
+        data: {
+            name: "Empty",
+            monday: { create: { name: "Empty Monday" } },
+            tuesday: { create: { name: "Empty Tuesday" } },
+            wednesday: { create: { name: "Empty Wednesday" } },
+            thursday: { create: { name: "Empty Thursday" } },
+            friday: { create: { name: "Empty Friday" } },
+        },
+    });
+
+    console.log("Creating Week Timetable...");
+
+    for (let i = 0; i < PERIODS.length; i++) {
+        const days = [
+            "mondayId",
+            "tuesdayId",
+            "wednesdayId",
+            "thursdayId",
+            "fridayId",
+        ] as const;
+
+        const dayTimetableId = weekTimetable[days[i]];
+
+        const periodTypeMap = new Map([
+            ["class", "CLASS"],
+            ["break", "BREAK"],
+            ["la", "LA"],
+            ["custom", "CUSTOM"],
+        ]);
+
+        for (let period of PERIODS[i]) {
+            const periodType: any = periodTypeMap.get(
+                period.type.toLowerCase(),
+            );
+
+            await prisma.period.create({
+                data: {
+                    startTime: period.start,
+                    endTime: period.end,
+                    periodType,
+                    name: period.name || null,
+                    line: period.line || null,
+                    dayTimetables: {
+                        connect: { id: dayTimetableId },
+                    },
+                },
+            });
+        }
+
+        console.log(`${days[i].replace("Id", "")} Done!`);
+    }
+
+    await prisma.week.create({
+        data: {
+            number: getWeek(),
+            year: 2024,
+            weekTimetable: {
+                connect: { id: weekTimetable.id },
+            },
+        },
+    });
+
+    console.log("Set timetable as current");
+}
+
 async function main() {
     const prisma = new PrismaClient({});
 
     await create_commons_and_spaces(prisma);
     await create_teachers(prisma);
     await create_courses(prisma);
+    await create_default_timetable(prisma);
 
     console.log("All Sample Data Created!");
 }
