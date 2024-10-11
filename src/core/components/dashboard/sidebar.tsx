@@ -34,12 +34,12 @@ const DashboardSidebar = () => {
         {
             text: "Timetable",
             link: "/dashboard/timetable",
-            icon: faTicket,
+            icon: faCalendarCheck,
         },
         {
             text: "Book",
             link: "/dashboard/book",
-            icon: faCalendarCheck,
+            icon: faTicket,
         },
         {
             text: "Settings",
