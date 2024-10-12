@@ -2,7 +2,7 @@ import React from "react";
 
 import prisma from "@db/orm";
 import { auth } from "@auth";
-import { getEvents } from "@lib/times";
+import { getEvents } from "@lib/events";
 import { FiveOf } from "@core/types/timetable";
 import TimetableMenu from "@components/timetable/menu";
 import TimetableData from "@components/timetable/timetableData";
