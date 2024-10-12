@@ -48,8 +48,9 @@ model Course {
   teacherId String @map("teacher_id")
   commonId  String @map("common_id")
 
-  teacher Teacher @relation(fields: [teacherId], references: [id])
-  common  Common  @relation(fields: [commonId], references: [id])
+  teacher Teacher   @relation(fields: [teacherId], references: [id])
+  common  Common    @relation(fields: [commonId], references: [id])
+  Booking Booking[]
 
   @@map("courses")
 }
@@ -73,7 +74,8 @@ model Space {
 
   commonId String? @map("common_id")
 
-  common Common? @relation(fields: [commonId], references: [id])
+  common  Common?   @relation(fields: [commonId], references: [id])
+  Booking Booking[]
 
   @@map("spaces")
 }
@@ -133,9 +135,23 @@ model Week {
   yearGroup Year // what actual year group this corresponds to eg year 11 or year 12
 
   weekTimetableId String?        @map("week_timetable_id")
-  weekTimetable   WeekTimetable? @relation(fields: [weekTimetableId], references: [id], onDelete: Cascade)
+  weekTimetable   WeekTimetable? @relation(fields: [weekTimetableId], references: [id])
+  Booking         Booking[]
 
   @@map("weeks")
+}
+
+model Booking {
+  id  String @id @unique @default(cuid())
+  day Day
+
+  weekId   String @map("week_id")
+  spaceId  String @map("space_id")
+  courseId String @map("course_id")
+
+  space  Space  @relation(fields: [spaceId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+  week   Week   @relation(fields: [weekId], references: [id])
 }
 
 enum PeriodType {
@@ -156,4 +172,12 @@ enum Year {
   Y11
   Y12
   Y13
+}
+
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
 }
