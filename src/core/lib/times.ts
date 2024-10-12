@@ -37,8 +37,6 @@ export async function getTimetable(
         include: { weekTimetable: weekIncludeQuery },
     });
 
-    console.log(week, date);
-
     let timetable;
     if (week) {
         timetable = week.weekTimetable;
