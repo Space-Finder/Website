@@ -40,7 +40,7 @@ const Timetable = async ({
         return;
     }
 
-    const events = await getEvents(teacher);
+    const events = await getEvents(teacher, weekdays[0]);
 
     return (
         <main>

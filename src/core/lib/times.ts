@@ -37,6 +37,8 @@ export async function getTimetable(
         include: { weekTimetable: weekIncludeQuery },
     });
 
+    console.log(week, date);
+
     let timetable;
     if (week) {
         timetable = week.weekTimetable;
@@ -104,11 +106,13 @@ export function calculatePosition(
 
 export async function getEvents(
     teacher: Teacher,
+    date?: Date,
 ): Promise<FiveOf<TimetableEvent[]>> {
     const events: FiveOf<TimetableEvent[]> = [[], [], [], [], []];
 
     const groupedCourses = groupBy(teacher.courses, "year");
-    const timetables = await getTimetables();
+    const timetables = await getTimetables(date);
+
     for (const year in groupedCourses) {
         const timetablePeriods = timetables[year as Year];
         const coursesMap = new Map<number, Course>(
