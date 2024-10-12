@@ -1,15 +1,13 @@
 import "server-only";
 
 import { AuthConfig } from "@core/types";
-import { ACCESS_TOKEN_EXPIRY, inDevelopmentMode } from "@lib/consts";
-
-const NEW_USER_URL = inDevelopmentMode ? "/" : "/onboarding";
+import { ACCESS_TOKEN_EXPIRY } from "@lib/consts";
 
 const AUTH_CONFIG = {
     pages: {
         signIn: "/dashboard",
         signOut: "/",
-        newUser: NEW_USER_URL,
+        newUser: "/onboarding",
     },
     token: {
         accessTokenLifespan: ACCESS_TOKEN_EXPIRY,
