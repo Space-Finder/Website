@@ -304,6 +304,40 @@ async function create_default_timetable(prisma: PrismaClient) {
     console.log("Set timetable as current");
 }
 
+async function bookings(prisma: PrismaClient) {
+    const courses = await prisma.course.findMany();
+
+    for (const course of courses) {
+        const spaces = await prisma.space.findMany({
+            where: { commonId: course.commonId },
+            select: { id: true },
+        });
+
+        const week = await prisma.week.findFirst({
+            where: { number: getWeek(), year: 2024, yearGroup: course.year },
+        });
+
+        if (!week) {
+            continue;
+        }
+
+        const randomSpaceId =
+            spaces[Math.floor(Math.random() * spaces.length)].id;
+
+        for (const n of [1, 2, 3]) {
+            await prisma.booking.create({
+                data: {
+                    courseId: course.id,
+                    periodNumber: n,
+                    spaceId: randomSpaceId,
+                    weekId: week.id,
+                    teacherId: course.teacherId,
+                },
+            });
+        }
+    }
+}
+
 async function main() {
     const prisma = new PrismaClient({});
 
@@ -311,6 +345,7 @@ async function main() {
     await create_teachers(prisma);
     await create_courses(prisma);
     await create_default_timetable(prisma);
+    await bookings(prisma);
 
     console.log("All Sample Data Created!");
 }
