@@ -49,7 +49,7 @@ const Timetable = async ({
             <div className="flex flex-col gap-8 p-2 py-12">
                 <section>
                     <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-                        <TimetableMenu />
+                        <TimetableMenu teacher={teacher.code} week={week} />
 
                         <TimetableData
                             weekdays={weekdays as FiveOf<Date>}

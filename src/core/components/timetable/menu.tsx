@@ -1,9 +1,23 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-const TimetableMenu = () => {
+import { getWeek } from "@lib/dates";
+
+const TimetableMenu = ({
+    teacher,
+    week,
+}: {
+    teacher: string;
+    week: number;
+}) => {
     const today = new Date();
+
+    const pathname = usePathname();
+    const router = useRouter();
+    const currentSearchParams = useSearchParams();
 
     return (
         <div className="mb-5 flex flex-col items-center justify-between max-md:gap-3 md:flex-row">
@@ -28,10 +42,63 @@ const TimetableMenu = () => {
                     })}
                 </h6>
             </div>
-            <div className="flex items-center gap-px rounded-lg bg-gray-100 p-1">
-                <button className="rounded-lg px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:bg-white hover:text-indigo-600">
-                    This Week
-                </button>
+            <div className="flex items-center justify-center">
+                <div>
+                    <select
+                        onChange={(event) => {
+                            const query = event.target.value;
+
+                            const updatedSearchParams = new URLSearchParams(
+                                currentSearchParams.toString(),
+                            );
+                            updatedSearchParams.set("teacher", query);
+
+                            router.push(
+                                pathname + "?" + updatedSearchParams.toString(),
+                            );
+                        }}
+                        name="Teachers"
+                        id="teacherCodes"
+                    >
+                        <option value="PD">PD</option>
+                        <option value="SP">SP</option>
+                    </select>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg p-1">
+                    <Link
+                        href={{
+                            pathname: "/dashboard/timetable",
+                            query: {
+                                week: Math.max(1, week - 1),
+                                teacher: teacher,
+                            },
+                        }}
+                    >
+                        {"<"}
+                    </Link>
+                    <Link
+                        href={{
+                            pathname: "/dashboard/timetable",
+                            query: {
+                                week: getWeek(today),
+                                teacher: teacher,
+                            },
+                        }}
+                    >
+                        This Week
+                    </Link>
+                    <Link
+                        href={{
+                            pathname: "/dashboard/timetable",
+                            query: {
+                                week: Math.min(52, week + 1),
+                                teacher: teacher,
+                            },
+                        }}
+                    >
+                        {">"}
+                    </Link>
+                </div>
             </div>
         </div>
     );
