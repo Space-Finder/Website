@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { auth } from "@auth";
 import prisma from "@db/orm";
+import { getWeek } from "@lib/dates";
 import Greeting from "@components/greeting";
 
 export const metadata = {
@@ -33,6 +34,8 @@ const Dashboard = async () => {
     const { courses, common } = teacher;
 
     const commons = await prisma.common.findMany();
+
+    const nextWeekNumber = getWeek() + 1;
 
     return (
         <div className="mt-10 space-y-8">
@@ -72,7 +75,7 @@ const Dashboard = async () => {
 
                             <div className="ml-4 flex space-x-2">
                                 <Link
-                                    href={`/dashboard/book?courseId=${course.id}`}
+                                    href={`/dashboard/book?week=${nextWeekNumber}&courseId=${course.id}&teacherId=${teacher.id}`}
                                     className="rounded bg-blue-500 px-6 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
                                 >
                                     Book

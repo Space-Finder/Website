@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 import { formatTime } from "@lib/times";
 import { calculatePosition } from "@lib/times";
@@ -36,7 +37,13 @@ const TimetableEvent = (props: TimetableEventProps) => {
             <p className="text-xs font-semibold">{props.title}</p>
             {props.description && (
                 <p className="mb-px text-xs font-normal text-gray-900">
-                    {props.description}
+                    {props.locked ? (
+                        props.description
+                    ) : (
+                        <Link className="hover:underline" href={props.url}>
+                            {props.description}
+                        </Link>
+                    )}
                 </p>
             )}
             {showTime && (

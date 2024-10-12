@@ -144,6 +144,7 @@ export async function getEvents(
                     teacher,
                     coursesMap,
                     bookingsMap,
+                    getWeek(date),
                 );
                 if (event) {
                     events[dayIndex].push(event);
@@ -160,6 +161,7 @@ function convertToEvent(
     teacher: Teacher,
     courses: Map<number, Course>,
     bookingsMap: Map<string, Booking & { space: Space }>,
+    week: number,
 ): TimetableEvent | undefined {
     const baseEvent = {
         startTime: period.startTime,
@@ -208,12 +210,27 @@ function convertToEvent(
             // Determine the location based on the booking
             const location = booking?.space.name || "Not Booked Yet";
 
+            // if the week is either the current, or before that, the bookings are locked
+            const currentWeek = getWeek();
+            if (week <= currentWeek) {
+                return {
+                    ...baseEvent,
+                    title: `${course.name} - (${course.code})`,
+                    description: `${location} (${course.common.name.slice(0, 4).toUpperCase()})`,
+                    backgroundColor: course.common.secondaryColor,
+                    borderColor: course.common.primaryColor,
+                };
+            }
+
             return {
                 ...baseEvent,
                 title: `${course.name} - (${course.code})`,
                 description: `${location} (${course.common.name.slice(0, 4).toUpperCase()})`,
                 backgroundColor: course.common.secondaryColor,
                 borderColor: course.common.primaryColor,
+                locked: false,
+                booked: Boolean(booking),
+                url: `/dashboard/book?week=${week}&courseId=${course.id}&teacherId=${teacher.id}`,
             };
     }
 }
