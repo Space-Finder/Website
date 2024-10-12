@@ -82,11 +82,11 @@ async function create_commons_and_spaces(prisma: PrismaClient) {
 
 async function create_teachers(prisma: PrismaClient) {
     const pukeko = await prisma.common.findFirst({ where: { name: "Pukeko" } });
-    const papatuanuku = await prisma.common.findFirst({
-        where: { name: "Papatuanuku" },
+    const kahikatea = await prisma.common.findFirst({
+        where: { name: "Kahikatea" },
     });
 
-    if (!pukeko || !papatuanuku) {
+    if (!pukeko || !kahikatea) {
         return console.log("Failed to create teachers as no common found");
     }
 
@@ -101,7 +101,7 @@ async function create_teachers(prisma: PrismaClient) {
             {
                 code: "SP",
                 email: "gsheppard@ormiston.school.nz",
-                commonId: papatuanuku.id,
+                commonId: kahikatea.id,
             },
         ],
     });
@@ -164,7 +164,7 @@ async function create_courses(prisma: PrismaClient) {
                 year: "Y12",
             },
             {
-                name: "Digital Technologies - Media",
+                name: "Digital Media",
                 code: "DITM",
                 line: 6,
                 teacherId: pd.id,
@@ -195,7 +195,7 @@ async function create_courses(prisma: PrismaClient) {
                 year: "Y11",
             },
             {
-                name: "Digital Technologies - Media",
+                name: "Digital Media",
                 code: "DITM",
                 line: 4,
                 teacherId: sp.id,
@@ -221,6 +221,7 @@ async function create_default_timetable(prisma: PrismaClient) {
     const weekTimetable = await prisma.weekTimetable.create({
         data: {
             name: "Default",
+            default: true,
             monday: { create: { name: "Default Monday" } },
             tuesday: { create: { name: "Default Tuesday" } },
             wednesday: { create: { name: "Default Wednesday" } },
@@ -282,15 +283,23 @@ async function create_default_timetable(prisma: PrismaClient) {
         console.log(`${days[i].replace("Id", "")} Done!`);
     }
 
-    await prisma.week.create({
-        data: {
-            number: getWeek(),
-            year: 2024,
-            weekTimetable: {
-                connect: { id: weekTimetable.id },
-            },
+    const weekData = {
+        number: getWeek(),
+        year: new Date().getFullYear(),
+        weekTimetable: {
+            connect: { id: weekTimetable.id },
         },
-    });
+    } as const;
+
+    for (const y of ["Y11", "Y12", "Y13"] as const) {
+        await prisma.week.create({
+            data: {
+                ...weekData,
+                yearGroup: y,
+            },
+        });
+        console.log(`Created ${y} week table`);
+    }
 
     console.log("Set timetable as current");
 }
