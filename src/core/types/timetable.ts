@@ -1,3 +1,5 @@
+import { Year } from "@prisma/client";
+
 export type Period = {
     id: string;
     startTime: string;
@@ -34,3 +36,35 @@ export type TimetableEvent = {
 );
 
 export type TimetableEventProps = { totalHeight: number } & TimetableEvent;
+
+export type Course = Teacher["courses"][0];
+
+// type needed for getEvents function
+export type Teacher = {
+    courses: {
+        common: {
+            id: string;
+            name: string;
+            primaryColor: string;
+            secondaryColor: string;
+        };
+        id: string;
+        code: string;
+        name: string;
+        line: number;
+        year: Year;
+        teacherId: string;
+        commonId: string;
+    }[];
+    common: {
+        id: string;
+        name: string;
+        primaryColor: string;
+        secondaryColor: string;
+    };
+    id: string;
+    code: string;
+    email: string;
+    userId: string | null;
+    commonId: string;
+};

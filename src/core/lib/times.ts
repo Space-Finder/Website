@@ -1,9 +1,17 @@
+import { groupBy } from "lodash";
 import { Year } from "@prisma/client";
 
 import prisma from "@db/orm";
 import { getWeek } from "./dates";
 import { HOURS_IN_DAY } from "@lib/consts";
-import { WeekPeriods, FiveOf, TimetableEvent } from "@core/types/timetable";
+import {
+    WeekPeriods,
+    FiveOf,
+    TimetableEvent,
+    Period,
+    Course,
+    Teacher,
+} from "@core/types/timetable";
 
 // converts 24h to 12h time
 export function formatTime(timeString: string) {
@@ -13,7 +21,10 @@ export function formatTime(timeString: string) {
 }
 
 // get all the periods for the current week
-export async function getTimetable(date?: Date): Promise<WeekPeriods> {
+export async function getTimetable(
+    yearGroup: Year,
+    date?: Date,
+): Promise<WeekPeriods> {
     if (!date) {
         date = new Date();
     }
@@ -22,7 +33,7 @@ export async function getTimetable(date?: Date): Promise<WeekPeriods> {
     const currentYear = date.getFullYear();
 
     const week = await prisma.week.findFirst({
-        where: { year: currentYear, number: weekNumber },
+        where: { year: currentYear, number: weekNumber, yearGroup },
         include: { weekTimetable: weekIncludeQuery },
     });
 
@@ -30,8 +41,8 @@ export async function getTimetable(date?: Date): Promise<WeekPeriods> {
     if (week) {
         timetable = week.weekTimetable;
     } else {
-        timetable = await prisma.weekTimetable.findUnique({
-            where: { name: "Default" },
+        timetable = await prisma.weekTimetable.findFirst({
+            where: { default: true },
             ...weekIncludeQuery,
         });
     }
@@ -47,6 +58,14 @@ export async function getTimetable(date?: Date): Promise<WeekPeriods> {
         timetable.thursday.periods,
         timetable.friday.periods,
     ] as WeekPeriods;
+}
+
+export async function getTimetables(date?: Date) {
+    return {
+        Y11: await getTimetable("Y11", date),
+        Y12: await getTimetable("Y12", date),
+        Y13: await getTimetable("Y13", date),
+    };
 }
 
 // calculates where to position the indivisual timetable event
@@ -86,108 +105,85 @@ export function calculatePosition(
 export async function getEvents(
     teacher: Teacher,
 ): Promise<FiveOf<TimetableEvent[]>> {
-    const courses = new Map<number, (typeof teacher.courses)[0]>();
-    for (const course of teacher.courses) {
-        courses.set(course.line, course);
-    }
+    const events: FiveOf<TimetableEvent[]> = [[], [], [], [], []];
 
-    const timetablePeriods = await getTimetable();
-    const events: TimetableEvent[][] = [];
+    const groupedCourses = groupBy(teacher.courses, "year");
+    const timetables = await getTimetables();
+    for (const year in groupedCourses) {
+        const timetablePeriods = timetables[year as Year];
 
-    for (const day of timetablePeriods) {
-        const dayEvents: TimetableEvent[] = [];
-
-        for (const period of day) {
-            const baseEvent = {
-                startTime: period.startTime,
-                endTime: period.endTime,
-                locked: true,
-            } as const;
-
-            switch (period.periodType) {
-                case "BREAK":
-                    dayEvents.push({
-                        ...baseEvent,
-                        title: "Break",
-                        description: null,
-                        backgroundColor: "#fff7ed",
-                        borderColor: "#ea580c",
-                    });
-                    break;
-
-                case "CUSTOM":
-                    dayEvents.push({
-                        ...baseEvent,
-                        title: period.name,
-                        description: null,
-                        backgroundColor: "##f0fdf4",
-                        borderColor: "#16a34a",
-                    });
-                    break;
-
-                case "LA":
-                    dayEvents.push({
-                        ...baseEvent,
-                        title: period.name,
-                        description: null,
-                        backgroundColor: teacher.common.secondaryColor,
-                        borderColor: teacher.common.primaryColor,
-                    });
-                    break;
-
-                case "CLASS":
-                    const course = courses.get(period.line);
-                    const location = "Unset"; // TODO: NEED TO CONNECT TO BOOKINGS
-
-                    if (course) {
-                        dayEvents.push({
-                            ...baseEvent,
-                            title: `${course.name} - (${course.code})`,
-                            description: `${location} (${course.common.name.slice(0, 4).toUpperCase()})`,
-                            backgroundColor: course.common.secondaryColor,
-                            borderColor: course.common.primaryColor,
-                        });
-                    }
-
-                    break;
-            }
+        const courses = new Map<number, Course>();
+        for (const course of groupedCourses[year]) {
+            courses.set(course.line, course);
         }
 
-        events.push(dayEvents);
+        timetablePeriods.map((day, index) => {
+            for (const period of day) {
+                const event = convertToEvent(period, teacher, courses);
+                if (event) {
+                    events[index].push(event);
+                }
+            }
+        });
     }
 
     return events as FiveOf<TimetableEvent[]>;
 }
 
-// type needed for getEvents function
-type Teacher = {
-    courses: {
-        common: {
-            id: string;
-            name: string;
-            primaryColor: string;
-            secondaryColor: string;
-        };
-        id: string;
-        code: string;
-        name: string;
-        line: number;
-        year: Year;
-        teacherId: string;
-        commonId: string;
-    }[];
-    common: {
-        id: string;
-        name: string;
-        primaryColor: string;
-        secondaryColor: string;
-    };
-    id: string;
-    code: string;
-    email: string;
-    userId: string | null;
-    commonId: string;
-};
+function convertToEvent(
+    period: Period,
+    teacher: Teacher,
+    courses: Map<number, Course>,
+): TimetableEvent | undefined {
+    const baseEvent = {
+        startTime: period.startTime,
+        endTime: period.endTime,
+        locked: true,
+    } as const;
+
+    switch (period.periodType) {
+        case "BREAK":
+            return {
+                ...baseEvent,
+                title: "Break",
+                description: null,
+                backgroundColor: "#fff7ed",
+                borderColor: "#ea580c",
+            };
+
+        case "CUSTOM":
+            return {
+                ...baseEvent,
+                title: period.name,
+                description: null,
+                backgroundColor: "##f0fdf4",
+                borderColor: "#16a34a",
+            };
+
+        case "LA":
+            return {
+                ...baseEvent,
+                title: period.name,
+                description: null,
+                backgroundColor: teacher.common.secondaryColor,
+                borderColor: teacher.common.primaryColor,
+            };
+
+        case "CLASS":
+            const course = courses.get(period.line);
+            const location = "Unset"; // TODO: NEED TO CONNECT TO BOOKINGS
+
+            if (course) {
+                return {
+                    ...baseEvent,
+                    title: `${course.name} - (${course.code})`,
+                    description: `${location} (${course.common.name.slice(0, 4).toUpperCase()})`,
+                    backgroundColor: course.common.secondaryColor,
+                    borderColor: course.common.primaryColor,
+                };
+            }
+    }
+}
 
 // for the prisma query in getTimetable, its pretty big so I put this at the bottom of file
 const weekIncludeQuery = {
