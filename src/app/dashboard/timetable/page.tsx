@@ -32,7 +32,9 @@ const Timetable = async ({
 
     const teacherCode = searchParams.teacher;
     const teacher = await prisma.teacher.findUnique({
-        where: teacherCode ? { code: teacherCode } : { userId: session.id },
+        where: teacherCode
+            ? { code: teacherCode.toUpperCase() }
+            : { userId: session.id },
         include: { courses: { include: { common: true } }, common: true },
     });
 
