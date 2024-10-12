@@ -8,4 +8,4 @@ format:
 	@pnpm run format
 
 sample:
-	@tsc scripts/create.ts && node scripts/create.js && rm scripts/create.js
+	@tsc scripts/create.ts && node scripts/create.js && rm scripts/*.js
