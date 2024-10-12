@@ -31,9 +31,10 @@ model Teacher {
   userId   String? @unique @map("user_id")
   commonId String  @map("common_id")
 
-  user    User?    @relation(fields: [userId], references: [id])
-  common  Common   @relation(fields: [commonId], references: [id])
+  user    User?     @relation(fields: [userId], references: [id])
+  common  Common    @relation(fields: [commonId], references: [id])
   courses Course[]
+  Booking Booking[]
 
   @@map("teachers")
 }
@@ -142,16 +143,18 @@ model Week {
 }
 
 model Booking {
-  id  String @id @unique @default(cuid())
-  day Day
+  id           String @id @unique @default(cuid())
+  periodNumber Int    @map("period_number")
 
-  weekId   String @map("week_id")
-  spaceId  String @map("space_id")
-  courseId String @map("course_id")
+  weekId    String @map("week_id")
+  spaceId   String @map("space_id")
+  courseId  String @map("course_id")
+  teacherId String @map("teacher_id")
 
-  space  Space  @relation(fields: [spaceId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
-  week   Week   @relation(fields: [weekId], references: [id])
+  space   Space   @relation(fields: [spaceId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+  week    Week    @relation(fields: [weekId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
 }
 
 enum PeriodType {
