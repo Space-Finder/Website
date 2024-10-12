@@ -111,23 +111,21 @@ export async function getEvents(
     const timetables = await getTimetables();
     for (const year in groupedCourses) {
         const timetablePeriods = timetables[year as Year];
+        const coursesMap = new Map<number, Course>(
+            groupedCourses[year].map((course: Course) => [course.line, course]),
+        );
 
-        const courses = new Map<number, Course>();
-        for (const course of groupedCourses[year]) {
-            courses.set(course.line, course);
-        }
-
-        timetablePeriods.map((day, index) => {
-            for (const period of day) {
-                const event = convertToEvent(period, teacher, courses);
+        timetablePeriods.forEach((day, dayIndex) => {
+            day.forEach((period) => {
+                const event = convertToEvent(period, teacher, coursesMap);
                 if (event) {
-                    events[index].push(event);
+                    events[dayIndex].push(event);
                 }
-            }
+            });
         });
     }
 
-    return events as FiveOf<TimetableEvent[]>;
+    return events;
 }
 
 function convertToEvent(
