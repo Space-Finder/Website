@@ -2,16 +2,25 @@
 
 import React from "react";
 import Link from "next/link";
+import { Teacher, User } from "@prisma/client";
+import * as Select from "@radix-ui/react-select";
+import {
+    CheckIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+} from "@radix-ui/react-icons";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { getWeek } from "@lib/dates";
 
 const TimetableMenu = ({
-    teacher,
     week,
+    teacher,
+    teachers,
 }: {
-    teacher: string;
     week: number;
+    teacher: string;
+    teachers: Teacher[];
 }) => {
     const today = new Date();
 
@@ -42,27 +51,59 @@ const TimetableMenu = ({
                     })}
                 </h6>
             </div>
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center gap-5">
                 <div>
-                    <select
-                        onChange={(event) => {
-                            const query = event.target.value;
-
+                    <Select.Root
+                        value={teacher}
+                        onValueChange={(teacherCode) => {
                             const updatedSearchParams = new URLSearchParams(
                                 currentSearchParams.toString(),
                             );
-                            updatedSearchParams.set("teacher", query);
+                            updatedSearchParams.set("teacher", teacherCode);
 
                             router.push(
                                 pathname + "?" + updatedSearchParams.toString(),
                             );
                         }}
-                        name="Teachers"
-                        id="teacherCodes"
                     >
-                        <option value="PD">PD</option>
-                        <option value="SP">SP</option>
-                    </select>
+                        <Select.Trigger className="flex w-full items-center justify-between rounded border border-gray-300 bg-white p-2 px-3 shadow-sm hover:bg-gray-100 focus:ring-2 focus:ring-blue-500">
+                            <Select.Value placeholder="Select a teacher..." />
+                            <Select.Icon>
+                                <ChevronDownIcon />
+                            </Select.Icon>
+                        </Select.Trigger>
+
+                        <Select.Portal>
+                            <Select.Content className="rounded border border-gray-200 bg-white shadow-lg">
+                                <Select.ScrollUpButton className="flex items-center justify-center p-1">
+                                    <ChevronUpIcon />
+                                </Select.ScrollUpButton>
+
+                                <Select.Viewport>
+                                    <Select.Group>
+                                        {teachers.map((teacher) => (
+                                            <Select.Item
+                                                key={teacher.id}
+                                                value={teacher.code}
+                                                className="flex cursor-pointer items-center justify-between p-2 hover:bg-gray-100"
+                                            >
+                                                <Select.ItemText>
+                                                    {teacher.code}
+                                                </Select.ItemText>
+                                                <Select.ItemIndicator>
+                                                    <CheckIcon />
+                                                </Select.ItemIndicator>
+                                            </Select.Item>
+                                        ))}
+                                    </Select.Group>
+                                </Select.Viewport>
+
+                                <Select.ScrollDownButton className="flex items-center justify-center p-1">
+                                    <ChevronDownIcon />
+                                </Select.ScrollDownButton>
+                            </Select.Content>
+                        </Select.Portal>
+                    </Select.Root>
                 </div>
                 <div className="flex items-center gap-2 rounded-lg p-1">
                     <Link

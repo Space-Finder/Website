@@ -44,12 +44,18 @@ const Timetable = async ({
 
     const events = await getEvents(teacher, weekdays[0]);
 
+    const allTeachers = await prisma.teacher.findMany({});
+
     return (
         <main>
             <div className="flex flex-col gap-8 p-2 py-12">
                 <section>
                     <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-                        <TimetableMenu teacher={teacher.code} week={week} />
+                        <TimetableMenu
+                            teacher={teacher.code}
+                            teachers={allTeachers}
+                            week={week}
+                        />
 
                         <TimetableData
                             weekdays={weekdays as FiveOf<Date>}
