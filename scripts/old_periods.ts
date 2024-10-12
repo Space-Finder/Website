@@ -5,6 +5,7 @@ export type Period = {
     | {
           periodType: "class";
           line: number;
+          periodNumber: number;
       }
     | { periodType: "break" }
     | { periodType: "custom" | "LA"; name: string }
@@ -17,6 +18,7 @@ export const PERIODS = [
             endTime: "10:20",
             periodType: "class",
             line: 1,
+            periodNumber: 1,
         },
         { startTime: "10:20", endTime: "10:40", periodType: "break" },
         {
@@ -24,6 +26,7 @@ export const PERIODS = [
             endTime: "11:40",
             periodType: "class",
             line: 2,
+            periodNumber: 1,
         },
         {
             startTime: "11:40",
@@ -37,12 +40,14 @@ export const PERIODS = [
             endTime: "14:00",
             periodType: "class",
             line: 3,
+            periodNumber: 1,
         },
         {
             startTime: "14:00",
             endTime: "15:00",
             periodType: "class",
             line: 4,
+            periodNumber: 1,
         },
     ],
     [
@@ -51,6 +56,7 @@ export const PERIODS = [
             endTime: "10:20",
             periodType: "class",
             line: 2,
+            periodNumber: 2,
         },
         { startTime: "10:20", endTime: "10:40", periodType: "break" },
         {
@@ -58,12 +64,14 @@ export const PERIODS = [
             endTime: "11:40",
             periodType: "class",
             line: 5,
+            periodNumber: 1,
         },
         {
             startTime: "11:40",
             endTime: "12:40",
             periodType: "class",
             line: 6,
+            periodNumber: 1,
         },
         { startTime: "12:40", endTime: "13:30", periodType: "break" },
         {
@@ -77,6 +85,7 @@ export const PERIODS = [
             endTime: "15:30",
             periodType: "class",
             line: 1,
+            periodNumber: 2,
         },
     ],
     [
@@ -85,6 +94,7 @@ export const PERIODS = [
             endTime: "10:20",
             periodType: "class",
             line: 6,
+            periodNumber: 2,
         },
         { startTime: "10:20", endTime: "10:40", periodType: "break" },
         {
@@ -92,6 +102,7 @@ export const PERIODS = [
             endTime: "12:10",
             periodType: "class",
             line: 4,
+            periodNumber: 2,
         },
         { startTime: "12:10", endTime: "13:00", periodType: "break" },
         {
@@ -99,12 +110,14 @@ export const PERIODS = [
             endTime: "14:00",
             periodType: "class",
             line: 5,
+            periodNumber: 2,
         },
         {
             startTime: "14:00",
             endTime: "15:00",
             periodType: "class",
             line: 3,
+            periodNumber: 2,
         },
     ],
     [
@@ -113,12 +126,14 @@ export const PERIODS = [
             endTime: "11:40",
             periodType: "class",
             line: 3,
+            periodNumber: 3,
         },
         {
             startTime: "11:40",
             endTime: "12:40",
             periodType: "class",
             line: 1,
+            periodNumber: 3,
         },
         { startTime: "12:40", endTime: "13:30", periodType: "break" },
         {
@@ -126,6 +141,7 @@ export const PERIODS = [
             endTime: "14:30",
             periodType: "class",
             line: 2,
+            periodNumber: 3,
         },
         {
             startTime: "14:30",
@@ -140,6 +156,7 @@ export const PERIODS = [
             endTime: "10:20",
             periodType: "class",
             line: 5,
+            periodNumber: 3,
         },
         { startTime: "10:20", endTime: "10:40", periodType: "break" },
         {
@@ -147,12 +164,14 @@ export const PERIODS = [
             endTime: "11:40",
             periodType: "class",
             line: 4,
+            periodNumber: 3,
         },
         {
             startTime: "11:40",
             endTime: "12:40",
             periodType: "class",
             line: 6,
+            periodNumber: 3,
         },
         { startTime: "12:40", endTime: "13:30", periodType: "break" },
         {

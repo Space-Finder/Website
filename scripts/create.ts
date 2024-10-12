@@ -81,12 +81,14 @@ async function create_commons_and_spaces(prisma: PrismaClient) {
 }
 
 async function create_teachers(prisma: PrismaClient) {
-    const pukeko = await prisma.common.findFirst({ where: { name: "Pukeko" } });
     const kahikatea = await prisma.common.findFirst({
         where: { name: "Kahikatea" },
     });
+    const papatuanuku = await prisma.common.findFirst({
+        where: { name: "Papatuanuku" },
+    });
 
-    if (!pukeko || !kahikatea) {
+    if (!kahikatea || !papatuanuku) {
         return console.log("Failed to create teachers as no common found");
     }
 
@@ -96,7 +98,7 @@ async function create_teachers(prisma: PrismaClient) {
                 code: "PD",
                 // email: "hprasad@ormiston.school.nz",
                 email: "st22209@ormiston.school.nz",
-                commonId: pukeko.id,
+                commonId: kahikatea.id,
             },
             {
                 code: "SP",
@@ -270,6 +272,7 @@ async function create_default_timetable(prisma: PrismaClient) {
                 data: {
                     startTime: period.startTime,
                     endTime: period.endTime,
+                    periodNumber: period.periodNumber || 1,
                     periodType,
                     name: period.name || null,
                     line: period.line || null,
