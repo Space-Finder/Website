@@ -1,5 +1,5 @@
 import { groupBy } from "lodash";
-import { Year } from "@prisma/client";
+import { Year, Booking, Space } from "@prisma/client";
 
 import prisma from "@db/orm";
 import { getWeek } from "./dates";
@@ -111,6 +111,26 @@ export async function getEvents(
     const groupedCourses = groupBy(teacher.courses, "year");
     const timetables = await getTimetables(date);
 
+    const weekIds = await getWeekIdsForDate(date);
+
+    const bookings = await prisma.booking.findMany({
+        where: {
+            teacherId: teacher.id,
+            weekId: { in: Object.values(weekIds) },
+        },
+        include: {
+            space: true,
+        },
+    });
+
+    // map of bookings indexed by courseId and periodNumber
+    const bookingsMap = new Map(
+        bookings.map((booking) => [
+            `${booking.courseId}-${booking.periodNumber}`,
+            booking,
+        ]),
+    );
+
     for (const year in groupedCourses) {
         const timetablePeriods = timetables[year as Year];
         const coursesMap = new Map<number, Course>(
@@ -119,7 +139,12 @@ export async function getEvents(
 
         timetablePeriods.forEach((day, dayIndex) => {
             day.forEach((period) => {
-                const event = convertToEvent(period, teacher, coursesMap);
+                const event = convertToEvent(
+                    period,
+                    teacher,
+                    coursesMap,
+                    bookingsMap,
+                );
                 if (event) {
                     events[dayIndex].push(event);
                 }
@@ -134,6 +159,7 @@ function convertToEvent(
     period: Period,
     teacher: Teacher,
     courses: Map<number, Course>,
+    bookingsMap: Map<string, Booking & { space: Space }>,
 ): TimetableEvent | undefined {
     const baseEvent = {
         startTime: period.startTime,
@@ -171,18 +197,66 @@ function convertToEvent(
 
         case "CLASS":
             const course = courses.get(period.line);
-            const location = "Unset"; // TODO: NEED TO CONNECT TO BOOKINGS
 
-            if (course) {
-                return {
-                    ...baseEvent,
-                    title: `${course.name} - (${course.code})`,
-                    description: `${location} (${course.common.name.slice(0, 4).toUpperCase()})`,
-                    backgroundColor: course.common.secondaryColor,
-                    borderColor: course.common.primaryColor,
-                };
+            if (!course) {
+                return;
             }
+
+            const bookingKey = `${course.id}-${1}`;
+            const booking = bookingsMap.get(bookingKey);
+
+            // Determine the location based on the booking
+            const location = booking?.space.name || "Not Booked Yet";
+
+            return {
+                ...baseEvent,
+                title: `${course.name} - (${course.code})`,
+                description: `${location} (${course.common.name.slice(0, 4).toUpperCase()})`,
+                backgroundColor: course.common.secondaryColor,
+                borderColor: course.common.primaryColor,
+            };
     }
+}
+
+async function getWeekIdsForDate(
+    date?: Date,
+): Promise<{ Y11: string; Y12: string; Y13: string }> {
+    if (!date) {
+        date = new Date();
+    }
+
+    const year = date.getFullYear();
+    const weekNumber = getWeek(date);
+
+    const weekY11 = await prisma.week.findFirst({
+        where: {
+            year,
+            number: weekNumber,
+            yearGroup: "Y11",
+        },
+    });
+
+    const weekY12 = await prisma.week.findFirst({
+        where: {
+            year,
+            number: weekNumber,
+            yearGroup: "Y12",
+        },
+    });
+
+    const weekY13 = await prisma.week.findFirst({
+        where: {
+            year,
+            number: weekNumber,
+            yearGroup: "Y13",
+        },
+    });
+
+    return {
+        Y11: weekY11?.id || "",
+        Y12: weekY12?.id || "",
+        Y13: weekY13?.id || "",
+    };
 }
 
 // for the prisma query in getTimetable, its pretty big so I put this at the bottom of file
