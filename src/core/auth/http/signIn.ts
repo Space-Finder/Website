@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 
 import prisma from "@db/orm";
 import { AuthConfig } from "@core/types";
-import { SCHOOL_DOMAIN } from "@lib/consts";
 import { issueTokens, setCookies } from "@core/auth/utils";
+import { SCHOOL_DOMAIN, inDevelopmentMode } from "@lib/consts";
 
 export default async function handleLogin(
     config: AuthConfig,
@@ -41,7 +41,7 @@ export default async function handleLogin(
         return redirect(`${config.errorURL}?type=CouldNotFetch`);
     }
 
-    if (!email.endsWith("@" + SCHOOL_DOMAIN)) {
+    if (!inDevelopmentMode && !email.endsWith("@" + SCHOOL_DOMAIN)) {
         return redirect(`${config.errorURL}?type=NotSchoolEmail`);
     }
 

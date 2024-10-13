@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AuthConfig } from "@core/types";
-import { SCHOOL_DOMAIN } from "@lib/consts";
+import { SCHOOL_DOMAIN, inDevelopmentMode } from "@lib/consts";
 
 export async function login(config: AuthConfig, callbackURL?: string) {
     const scopes = ["openid", "profile", "email"];
@@ -9,7 +9,7 @@ export async function login(config: AuthConfig, callbackURL?: string) {
     const urlParameters = new URLSearchParams({
         access_type: "offline",
         scope: scopes.join(" "),
-        hd: SCHOOL_DOMAIN,
+        ...(!inDevelopmentMode && { hd: SCHOOL_DOMAIN }),
         response_type: "code",
         client_id: process.env.GOOGLE_CLIENT_ID,
         redirect_uri: `${config.authBaseURL}/signIn`,
