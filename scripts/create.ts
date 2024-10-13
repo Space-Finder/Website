@@ -108,7 +108,7 @@ async function create_teachers(prisma: PrismaClient) {
             {
                 code: "SP",
                 email: "gsheppard@ormiston.school.nz",
-                commonId: kahikatea.id,
+                commonId: papatuanuku.id,
             },
         ],
     });
