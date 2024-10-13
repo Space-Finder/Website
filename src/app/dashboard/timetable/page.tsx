@@ -30,6 +30,8 @@ const Timetable = async ({
     const date = getDateFromWeek(new Date().getFullYear(), week);
     const weekdays = getWeekDays(date);
 
+    const allTeachers = await prisma.teacher.findMany({});
+
     const teacherCode = searchParams.teacher;
     const teacher = await prisma.teacher.findUnique({
         where: teacherCode
@@ -39,12 +41,28 @@ const Timetable = async ({
     });
 
     if (!teacher) {
-        return;
+        if (session.role !== "ADMIN") {
+            return;
+        }
+
+        return (
+            <main>
+                <div className="flex flex-col gap-8 p-2 py-12">
+                    <section>
+                        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
+                            <TimetableMenu
+                                teacher={""}
+                                teachers={allTeachers}
+                                week={week}
+                            />
+                        </div>
+                    </section>
+                </div>
+            </main>
+        );
     }
 
     const events = await getEvents(teacher, weekdays[0]);
-
-    const allTeachers = await prisma.teacher.findMany({});
 
     return (
         <main>
