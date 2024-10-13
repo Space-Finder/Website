@@ -46,6 +46,11 @@ async function create_commons_and_spaces(prisma: PrismaClient) {
         "Dry Lab",
         "AV Room",
         "Away on Trip",
+        "Drama Room",
+        "Careers/Gateway",
+        "Theatre",
+        "Gym",
+        "Foodlab/Kitchen",
     ];
 
     for (const space of specialSpaces) {
