@@ -42,34 +42,22 @@ const Book = async ({
     });
 
     const allTeachers = await prisma.teacher.findMany({
-        ...(leaderTeacher && { where: { commonId: leaderTeacher.commonId } }),
+        ...(session.role == "LEADER" &&
+            leaderTeacher && { where: { commonId: leaderTeacher.commonId } }),
     });
-
     // you cant book previous weeks
     if (week <= currentWeek) {
         return;
     }
 
-    if (!teacher) {
-        if (session.role !== "ADMIN") {
-            return;
-        }
+    const courseId = searchParams.courseId || "";
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    const courses = await prisma.course.findMany({
+        where: { teacherId: teacher?.id },
+    });
 
-        return (
-            <main>
-                <div className="flex flex-col gap-8 p-2 py-12">
-                    <section>
-                        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-                            <BookingMenu
-                                teacher={""}
-                                teachers={allTeachers}
-                                week={week}
-                            />
-                        </div>
-                    </section>
-                </div>
-            </main>
-        );
+    if (!teacher && session.role !== "ADMIN") {
+        return;
     }
 
     switch (session.role) {
@@ -82,7 +70,7 @@ const Book = async ({
         case "LEADER":
             // if the selected teacher is in a different common to the leader, they can't book for them
             if (leaderTeacher?.commonId !== teacher?.common.id) {
-                return;
+                return "no in your common";
             }
             break;
     }
@@ -92,19 +80,15 @@ const Book = async ({
             <div className="flex flex-col gap-8 p-2 py-12">
                 <section>
                     <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
-                        {session.role == "TEACHER" ? (
-                            <div className="mb-5 flex flex-col items-center justify-between max-md:gap-3 md:flex-row">
-                                <div className="flex items-center gap-4">
-                                    <h1>Book Classes For Week {week}</h1>
-                                </div>
-                            </div>
-                        ) : (
-                            <BookingMenu
-                                teacher={teacher.code}
-                                teachers={allTeachers}
-                                week={week}
-                            />
-                        )}
+                        <BookingMenu
+                            teacher={teacher?.code || ""}
+                            teachers={allTeachers}
+                            course={course}
+                            courses={courses}
+                            week={week}
+                        />
+
+                        {course && <div>{course?.name}</div>}
                     </div>
                 </section>
             </div>
