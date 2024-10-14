@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { Teacher } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 
@@ -13,13 +14,13 @@ export async function GET(request: NextRequest) {
         return redirect("/dashboard");
     }
 
-    const isTeacher = Boolean(
-        await prisma.teacher.count({ where: { email: user.email } }),
-    );
+    const teacher = await prisma.teacher.findUnique({
+        where: { email: user.email },
+    });
 
-    if (isTeacher && !user.isTeacher) {
+    if (teacher && !user.isTeacher) {
         // if they are a teacher AND their account hasn't already been setup
-        await setupTeacherAccount(user.email);
+        await setupTeacherAccount(user.email, teacher);
     }
 
     await prisma.user.update({
@@ -51,10 +52,12 @@ async function getUser() {
     return user;
 }
 
-async function setupTeacherAccount(email: string) {
+async function setupTeacherAccount(email: string, teacher: Teacher) {
+    const role = teacher.isCommonLeader ? "LEADER" : "TEACHER";
+
     const user = await prisma.user.update({
         where: { email },
-        data: { isTeacher: true, role: "TEACHER" },
+        data: { isTeacher: true, role },
     });
 
     // links the existing teacher record, to the new user's account

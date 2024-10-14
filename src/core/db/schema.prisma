@@ -24,9 +24,10 @@ model User {
 }
 
 model Teacher {
-  id    String @id @unique @default(cuid())
-  code  String @unique
-  email String @unique
+  id             String  @id @unique @default(cuid())
+  code           String  @unique
+  email          String  @unique
+  isCommonLeader Boolean @default(false) @map("is_common_leader")
 
   userId   String? @unique @map("user_id")
   commonId String  @map("common_id")
