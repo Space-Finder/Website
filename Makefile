@@ -9,3 +9,6 @@ format:
 
 sample:
 	@tsc --resolveJsonModule --esModuleInterop scripts/create.ts && node scripts/create.js && rm scripts/*.js
+
+reset:
+	@pnpx prisma migrate reset --force
