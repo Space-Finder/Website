@@ -56,7 +56,7 @@ const DashboardSidebar = () => {
                     src={session.data.image || DEFAULT_PROFILE_PICTURE}
                     width={96}
                     height={96}
-                    unoptimized
+                    priority={true}
                     alt="avatar"
                 />
                 <h4 className="mx-2 mt-2 font-medium text-gray-800 dark:text-gray-200">
