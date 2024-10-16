@@ -8,6 +8,7 @@ export type Period = {
     | {
           periodType: "CLASS";
           line: number;
+          periodNumber: number;
       }
     | { periodType: "BREAK" }
     | { periodType: "CUSTOM" | "LA"; name: string }

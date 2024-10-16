@@ -140,7 +140,7 @@ async function create_default_timetable(prisma: PrismaClient) {
                 data: {
                     startTime: period.startTime,
                     endTime: period.endTime,
-                    periodNumber: period.periodNumber || 1,
+                    periodNumber: period.periodNumber,
                     periodType,
                     name: period.name || null,
                     line: period.line || null,
