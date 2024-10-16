@@ -162,14 +162,17 @@ async function create_default_timetable(prisma: PrismaClient) {
         },
     } as const;
 
-    for (const y of ["Y11", "Y12", "Y13"] as const) {
-        await prisma.week.create({
-            data: {
-                ...weekData,
-                yearGroup: y,
-            },
-        });
-        console.log(`Created ${y} week table`);
+    for (let week = weekData.number; week <= 52; week++) {
+        for (const y of ["Y11", "Y12", "Y13"] as const) {
+            await prisma.week.create({
+                data: {
+                    ...weekData,
+                    number: week,
+                    yearGroup: y,
+                },
+            });
+            console.log(`Created ${y} week table`);
+        }
     }
 
     console.log("Set timetable as current");
