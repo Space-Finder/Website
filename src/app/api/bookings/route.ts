@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
     const validator = QueryParametersValidator.safeParse(queryParameters);
 
     if (!validator.success) {
-        console.log(validator.error);
         return NextResponse.json(
             { detail: "Bad request! You're missing some fields" },
             { status: 400 },
