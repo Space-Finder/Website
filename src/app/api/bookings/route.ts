@@ -150,15 +150,23 @@ export async function GET(request: NextRequest) {
                     teacherId: teacher.id,
                     periodNumber: period.periodNumber,
                 },
+                include: {
+                    space: true,
+                    course: true,
+                },
             });
-            return Boolean(booking);
+            return booking;
         }),
     );
 
     const periodsBooked = periods.filter((_, index) => bookingsExist[index]);
     const periodsToBook = periods.filter((_, index) => !bookingsExist[index]);
 
-    return NextResponse.json({ periodsBooked, periodsToBook });
+    return NextResponse.json({
+        periodsBooked,
+        periodsToBook,
+        bookingsMade: bookingsExist,
+    });
 }
 
 const BodyValidator = z.object({
@@ -187,7 +195,8 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const validator = BodyValidator.safeParse(request.body);
+    const validator = BodyValidator.safeParse(await request.json());
+    console.log(request.body);
 
     if (!validator.success) {
         return NextResponse.json(
@@ -261,7 +270,7 @@ export async function POST(request: NextRequest) {
         },
     });
 
-    if (bookingExists) {
+    if (bookingExists.length) {
         return NextResponse.json(
             {
                 detail: "Booking conflict: This space is already booked for the specified period.",
