@@ -163,10 +163,11 @@ export async function GET(request: NextRequest) {
 
 const BodyValidator = z.object({
     periodNumber: z.number(),
+    week: z.number().min(1).max(52),
+
     teacherId: z.string().cuid(),
     courseId: z.string().cuid(),
     spaceId: z.string().cuid(),
-    weekId: z.string().cuid(),
 });
 
 export async function POST(request: NextRequest) {
@@ -195,17 +196,36 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const { teacherId, courseId, spaceId, periodNumber, weekId } =
-        validator.data;
+    const {
+        teacherId,
+        courseId,
+        spaceId,
+        periodNumber,
+        week: number,
+    } = validator.data;
 
-    const week = await prisma.week.findUnique({ where: { id: weekId } });
     const space = await prisma.space.findUnique({ where: { id: spaceId } });
     const course = await prisma.course.findUnique({ where: { id: courseId } });
     const teacher = await prisma.teacher.findUnique({
         where: { id: teacherId },
     });
 
-    if (!course || !teacher || !space || !week) {
+    if (!course || !teacher || !space) {
+        return NextResponse.json(
+            { detail: "Invalid Id Provided" },
+            { status: 400 },
+        );
+    }
+
+    const week = await prisma.week.findFirst({
+        where: {
+            number,
+            year: new Date().getFullYear(),
+            yearGroup: course.year,
+        },
+    });
+
+    if (!week) {
         return NextResponse.json(
             { detail: "Invalid Id Provided" },
             { status: 400 },
@@ -233,7 +253,7 @@ export async function POST(request: NextRequest) {
         where: {
             periodNumber,
             spaceId,
-            weekId,
+            weekId: week.id,
             course: {
                 line: course.line,
                 commonId: course.commonId,
@@ -254,9 +274,9 @@ export async function POST(request: NextRequest) {
         data: {
             periodNumber,
             spaceId,
-            weekId,
             courseId,
             teacherId,
+            weekId: week.id,
         },
     });
 
