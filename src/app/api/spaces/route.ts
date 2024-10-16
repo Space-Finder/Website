@@ -71,7 +71,11 @@ export async function GET(request: NextRequest) {
         "spaceId",
     );
 
-    const availableSpaces = allSpaces.filter((space) => bookings[space.id]);
+    const availableSpaces = allSpaces.filter(
+        (space) => !(space.id in bookings),
+    );
+    console.log(bookings, allSpaces);
+
     return NextResponse.json({
         availableSpaces,
         specialSpaces,
