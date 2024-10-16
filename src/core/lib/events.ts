@@ -114,7 +114,7 @@ function convertToEvent(
                 return;
             }
 
-            const bookingKey = `${course.id}-${1}`;
+            const bookingKey = `${course.id}-${period.periodNumber}`;
             const booking = bookingsMap.get(bookingKey);
 
             // Determine the location based on the booking
