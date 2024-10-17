@@ -196,7 +196,6 @@ export async function POST(request: NextRequest) {
     }
 
     const validator = BodyValidator.safeParse(await request.json());
-    console.log(request.body);
 
     if (!validator.success) {
         return NextResponse.json(
@@ -262,7 +261,9 @@ export async function POST(request: NextRequest) {
         where: {
             periodNumber,
             spaceId,
-            weekId: week.id,
+            week: {
+                number: week.number,
+            },
             course: {
                 line: course.line,
                 commonId: course.commonId,

@@ -74,7 +74,6 @@ export async function GET(request: NextRequest) {
     const availableSpaces = allSpaces.filter(
         (space) => !(space.id in bookings),
     );
-    console.log(bookings, allSpaces);
 
     return NextResponse.json({
         availableSpaces,
