@@ -1,7 +1,5 @@
 import "dotenv/config";
 import type { Metadata } from "next";
-import { Theme } from "@radix-ui/themes";
-import { ToastContainer } from "react-toastify";
 import { config as fontawesomeConfig } from "@fortawesome/fontawesome-svg-core";
 
 import "./globals.css";
@@ -11,7 +9,8 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 
 import { auth } from "@auth";
 import FONTS from "@lib/fonts";
-import Navbar from "@components/navbar";
+
+import { Provider } from "@components/provider";
 import SessionContextProvider from "@core/auth/provider";
 
 export const metadata: Metadata = {
@@ -35,11 +34,7 @@ export default async function RootLayout({
         <html lang="en">
             <body className={`bg-[${BACKGROUND_COLOR}] ${FONT_CLASSNAMES}`}>
                 <SessionContextProvider value={session}>
-                    <Theme hasBackground={false}>
-                        <Navbar />
-                        {children}
-                        <ToastContainer />
-                    </Theme>
+                    <Provider>{children}</Provider>
                 </SessionContextProvider>
             </body>
         </html>
