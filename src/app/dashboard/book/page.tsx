@@ -3,6 +3,7 @@ import React from "react";
 import { auth } from "@auth";
 import prisma from "@db/orm";
 import { getWeek } from "@lib/dates";
+import Booking from "@components/booking/book";
 import BookingMenu from "@components/booking/menu";
 
 export const metadata = {
@@ -22,6 +23,7 @@ const Book = async ({
     }
 
     const currentWeek = getWeek();
+
     // either provided or current, and ensure its in the 1 - 52 range
     const week = Math.min(
         Math.max(1, Number(searchParams.week) || currentWeek + 1),
@@ -88,7 +90,13 @@ const Book = async ({
                             week={week}
                         />
 
-                        {course && <div>{course?.name}</div>}
+                        {course && teacher && (
+                            <Booking
+                                week={week}
+                                teacher={teacher}
+                                course={course}
+                            />
+                        )}
                     </div>
                 </section>
             </div>
