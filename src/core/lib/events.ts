@@ -140,7 +140,7 @@ function convertToEvent(
                 borderColor: course.common.primaryColor,
                 locked: false,
                 booked: Boolean(booking),
-                url: `/dashboard/book?week=${week}&courseId=${course.id}&teacherId=${teacher.id}`,
+                url: `/dashboard/book?week=${week}&courseId=${course.id}&teacher=${teacher.code}`,
             };
     }
 }
