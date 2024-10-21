@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@auth";
 import prisma from "@db/orm";
-import { getWeek } from "@lib/dates";
+import { getWeek, getDate } from "@lib/dates";
 import { Period } from "@core/types/timetable";
 
 const QueryParametersValidator = z.object({
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = getDate().getFullYear();
 
     const week = await prisma.week.findFirst({
         where: {
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
     const week = await prisma.week.findFirst({
         where: {
             number,
-            year: new Date().getFullYear(),
+            year: getDate().getFullYear(),
             yearGroup: course.year,
         },
     });

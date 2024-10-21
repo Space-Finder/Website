@@ -1,7 +1,8 @@
 "use client";
+import { getDate } from "@lib/dates";
 
 const Greeting = ({ color, name }: { color: string; name: string }) => {
-    const hour = new Date().getHours();
+    const hour = getDate().getHours();
     const greeting =
         "Good " +
         ((hour < 12 && "Morning") || (hour < 18 && "Afternoon") || "Evening");

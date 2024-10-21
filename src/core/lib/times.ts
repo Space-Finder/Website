@@ -1,7 +1,7 @@
 import { Year } from "@prisma/client";
 
 import prisma from "@db/orm";
-import { getWeek } from "./dates";
+import { getWeek, getDate } from "./dates";
 import { HOURS_IN_DAY } from "@lib/consts";
 import { WeekPeriods } from "@core/types/timetable";
 
@@ -52,7 +52,7 @@ export async function getTimetable(
     date?: Date,
 ): Promise<WeekPeriods> {
     if (!date) {
-        date = new Date();
+        date = getDate();
     }
 
     const weekNumber = getWeek(date);

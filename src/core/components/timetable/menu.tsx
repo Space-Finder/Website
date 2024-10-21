@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Teacher } from "@prisma/client";
 
-import { getWeek } from "@lib/dates";
+import { getWeek, getDate } from "@lib/dates";
 import TeacherPicker from "@components/teacherPicker";
 
 const TimetableMenu = ({
@@ -16,7 +16,7 @@ const TimetableMenu = ({
     teacher: string;
     teachers: Teacher[];
 }) => {
-    const today = new Date();
+    const today = getDate();
 
     return (
         <div className="mb-5 flex flex-col items-center justify-between max-md:gap-3 md:flex-row">

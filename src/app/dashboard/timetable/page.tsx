@@ -27,7 +27,8 @@ const Timetable = async ({
 
     // get list of date objects for each day of the week
     const week = Number(searchParams.week) || getWeek();
-    const date = getDateFromWeek(new Date().getFullYear(), week);
+    const date = getDateFromWeek(week);
+
     const weekdays = getWeekDays(date);
 
     const allTeachers = await prisma.teacher.findMany({});

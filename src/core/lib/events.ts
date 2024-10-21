@@ -2,7 +2,7 @@ import { groupBy } from "lodash";
 import { Year, Booking, Space } from "@prisma/client";
 
 import prisma from "@db/orm";
-import { getWeek } from "./dates";
+import { getWeek, getDate } from "./dates";
 import { getTimetables } from "./times";
 import {
     FiveOf,
@@ -149,7 +149,7 @@ async function getWeekIdsForDate(
     date?: Date,
 ): Promise<{ Y11: string; Y12: string; Y13: string }> {
     if (!date) {
-        date = new Date();
+        date = getDate();
     }
 
     const year = date.getFullYear();

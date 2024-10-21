@@ -1,7 +1,9 @@
 "use client";
 
+import { isSameDay } from "date-fns";
 import React, { useRef, useEffect, useState } from "react";
 
+import { getDate } from "@lib/dates";
 import { formatTime } from "@lib/times";
 import { HOURS_IN_DAY, START_HOUR } from "@lib/consts";
 import TimetableEvent from "@components/timetable/event";
@@ -19,7 +21,7 @@ const TimetableData = (props: {
     weekdays: FiveOf<Date>;
     events: FiveOf<TimetableEventT[]>;
 }) => {
-    const today = new Date();
+    const today = getDate();
 
     const timeSlotsContainerRef = useRef<HTMLDivElement>(null);
     const [timeSlotsHeight, setTimeSlotsHeight] = useState<number>(0); // height of timetable
@@ -41,7 +43,7 @@ const TimetableData = (props: {
 
                 {/* render each day of the week */}
                 {props.weekdays.map((day, idx) => {
-                    const isToday = today.getTime() === day.getTime();
+                    const isToday = isSameDay(today, day);
                     const dayColor = isToday
                         ? "font-extrabold text-indigo-600"
                         : "text-gray-900";

@@ -5,21 +5,25 @@ import { FiveOf } from "@core/types/timetable";
 
 const TIME_ZONE = "Pacific/Auckland";
 
+export function getDate() {
+    const date = new Date();
+    return toZonedTime(date, TIME_ZONE);
+}
+
 export function getWeek(date?: Date): number {
     if (!date) {
-        date = new Date();
+        date = getDate();
     }
 
     const d = toZonedTime(date, TIME_ZONE);
     return getISOWeek(d);
 }
 
-export function getDateFromWeek(year: number, weekNumber: number): Date {
-    let date = new Date(year, 0, 1); // January 1st of the given year
-    date = setISOWeek(date, weekNumber);
-    date = startOfISOWeek(date);
+export function getDateFromWeek(weekNumber: number): Date {
+    const date = getDate();
+    const week = setISOWeek(date, weekNumber);
 
-    return toZonedTime(date, TIME_ZONE);
+    return startOfISOWeek(week);
 }
 
 export function getWeekDays(date: Date): FiveOf<Date> {

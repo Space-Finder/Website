@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession } from "@hooks/session";
 import { Teacher, Course } from "@prisma/client";
 
-import { getWeek } from "@lib/dates";
+import { getWeek, getDate } from "@lib/dates";
 import TeacherPicker from "@components/teacherPicker";
 import CoursePicker from "@components/classPicker";
 
@@ -22,7 +22,7 @@ const BookingMenu = ({
     course: Course | null;
     courses: Course[];
 }) => {
-    const today = new Date();
+    const today = getDate();
     const session = useSession();
     const currentWeek = getWeek(today);
 
