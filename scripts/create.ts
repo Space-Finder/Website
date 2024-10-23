@@ -258,6 +258,37 @@ async function bookings(prisma: PrismaClient) {
     }
 }
 
+async function terms(prisma: PrismaClient) {
+    await prisma.term.createMany({
+        data: [
+            {
+                number: 1,
+                startDate: new Date("2024-01-29T11:00:00Z"),
+                endDate: new Date("2024-04-12T10:59:59Z"),
+                year: 2024,
+            },
+            {
+                number: 2,
+                startDate: new Date("2024-04-28T12:00:00Z"),
+                endDate: new Date("2024-07-05T11:59:59Z"),
+                year: 2024,
+            },
+            {
+                number: 3,
+                startDate: new Date("2024-07-21T12:00:00Z"),
+                endDate: new Date("2024-09-27T11:59:59Z"),
+                year: 2024,
+            },
+            {
+                number: 4,
+                startDate: new Date("2024-10-13T11:00:00Z"),
+                endDate: new Date("2024-12-06T10:59:59Z"),
+                year: 2024,
+            },
+        ],
+    });
+}
+
 async function main() {
     const prisma = new PrismaClient({});
 
@@ -265,6 +296,7 @@ async function main() {
     await create_teachers_and_courses(prisma);
     await create_default_timetable(prisma);
     await bookings(prisma);
+    await terms(prisma);
 
     console.log("All Sample Data Created!");
 }
