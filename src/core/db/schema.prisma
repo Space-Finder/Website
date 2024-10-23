@@ -159,6 +159,14 @@ model Booking {
   teacher Teacher @relation(fields: [teacherId], references: [id])
 }
 
+model Term {
+  id        String   @id @default(cuid())
+  number    Int
+  startDate DateTime
+  endDate   DateTime
+  year      Int
+}
+
 enum PeriodType {
   CLASS
   BREAK
