@@ -35,10 +35,12 @@ model Teacher {
   userId   String? @unique @map("user_id")
   commonId String  @map("common_id")
 
-  user     User?     @relation(fields: [userId], references: [id])
-  common   Common    @relation(fields: [commonId], references: [id])
-  courses  Course[]
-  bookings Booking[]
+  user        User?     @relation(fields: [userId], references: [id])
+  common      Common    @relation(fields: [commonId], references: [id])
+  courses     Course[]
+  bookings    Booking[]
+  fromTeacher Request[] @relation("fromTeacher")
+  toTeacher   Request[] @relation("toTeacher")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -90,9 +92,10 @@ model Space {
 
   common   Common?   @relation(fields: [commonId], references: [id])
   bookings Booking[]
+  Request  Request[]
 
-  createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("spaces")
 }
@@ -203,6 +206,33 @@ model Term {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("terms")
+}
+
+model Request {
+  id           String        @id @default(cuid())
+  week         Int
+  line         Int
+  periodNumber Int           @map("period_number")
+  status       RequestStatus @default(PENDING)
+  space        Space         @relation(fields: [spaceId], references: [id])
+
+  fromTeacherId String @map("from_teacher_id")
+  toTeacherId   String @map("to_teacher_id")
+  spaceId       String @map("space_id")
+
+  fromTeacher Teacher @relation("fromTeacher", fields: [fromTeacherId], references: [id])
+  toTeacher   Teacher @relation("toTeacher", fields: [toTeacherId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("requests")
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DENIED
 }
 
 enum PeriodType {
