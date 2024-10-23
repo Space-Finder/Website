@@ -1,6 +1,13 @@
 import { toZonedTime } from "date-fns-tz";
-import { getISOWeek, setISOWeek, startOfISOWeek, addDays } from "date-fns";
+import {
+    getISOWeek,
+    setISOWeek,
+    startOfISOWeek,
+    addDays,
+    differenceInWeeks,
+} from "date-fns";
 
+import prisma from "@db/orm";
 import { FiveOf } from "@core/types/timetable";
 
 const TIME_ZONE = "Pacific/Auckland";
@@ -32,4 +39,48 @@ export function getWeekDays(date: Date): FiveOf<Date> {
         const day = addDays(monday, offset);
         return day;
     }) as FiveOf<Date>;
+}
+
+function getStartOfISOWeek(isoWeekNumber: number, year: number) {
+    const january4th = new Date(Date.UTC(year, 0, 4)); // January 4th always in the first ISO week
+    const startOfWeek = startOfISOWeek(january4th);
+
+    return new Date(
+        startOfWeek.setUTCDate(
+            startOfWeek.getUTCDate() + (isoWeekNumber - 1) * 7,
+        ),
+    );
+}
+
+export async function getTermAndWeek(isoWeekNumber: number, year: number) {
+    const isoWeekStartDate = getStartOfISOWeek(isoWeekNumber, year);
+    const isoWeekStartDateInUTC = new Date(isoWeekStartDate.toISOString());
+
+    const term = await prisma.term.findFirst({
+        where: {
+            startDate: {
+                lte: isoWeekStartDateInUTC,
+            },
+            endDate: {
+                gte: isoWeekStartDateInUTC,
+            },
+        },
+    });
+
+    if (term) {
+        const termStartDateInNZ = toZonedTime(
+            new Date(term.startDate),
+            TIME_ZONE,
+        );
+
+        const weekOfTerm =
+            differenceInWeeks(isoWeekStartDateInUTC, termStartDateInNZ) + 1;
+
+        return {
+            term: term.number,
+            week: weekOfTerm,
+        };
+    }
+
+    return null;
 }
