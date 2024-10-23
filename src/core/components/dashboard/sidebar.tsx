@@ -5,50 +5,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faTicket,
-    faList,
-    faCalendarCheck,
-    faLock,
-} from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 
 import { useSession } from "@hooks/session";
 
 const DEFAULT_PROFILE_PICTURE =
     "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg";
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({
+    dashboardPages,
+}: {
+    dashboardPages: {
+        text: string;
+        link: string;
+        icon: IconDefinition;
+    }[];
+}) => {
     const session = useSession();
     const pathname = usePathname();
 
     if (session.status !== "authenticated") {
         return;
-    }
-
-    const dashboardPages = [
-        {
-            text: "Classes",
-            link: "/dashboard",
-            icon: faList,
-        },
-        {
-            text: "Timetable",
-            link: "/dashboard/timetable",
-            icon: faCalendarCheck,
-        },
-        {
-            text: "Book",
-            link: "/dashboard/book",
-            icon: faTicket,
-        },
-    ];
-
-    if (session.data.role === "ADMIN") {
-        dashboardPages.push({
-            text: "Admin Dashboard",
-            link: "/admin/",
-            icon: faLock,
-        });
     }
 
     return (

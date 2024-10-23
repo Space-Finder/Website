@@ -1,6 +1,14 @@
 import React from "react";
 import { redirect } from "next/navigation";
 
+import {
+    faTicket,
+    faList,
+    faCalendarCheck,
+    faLock,
+    IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
+
 import { auth } from "@auth";
 import prisma from "@db/orm";
 import DashboardSidebar from "@components/dashboard/sidebar";
@@ -29,9 +37,35 @@ const DashboardLayout = async ({
         return redirect("/onboarding");
     }
 
+    const dashboardPages = [
+        {
+            text: "Classes",
+            link: "/dashboard",
+            icon: faList,
+        },
+        {
+            text: "Timetable",
+            link: "/dashboard/timetable",
+            icon: faCalendarCheck,
+        },
+        {
+            text: "Book",
+            link: "/dashboard/book",
+            icon: faTicket,
+        },
+    ];
+
+    if (session.role === "ADMIN") {
+        dashboardPages.push({
+            text: "Admin Dashboard",
+            link: "/admin/",
+            icon: faLock,
+        });
+    }
+
     return (
         <div className="flex">
-            <DashboardSidebar />
+            <DashboardSidebar dashboardPages={dashboardPages} />
             <main className="flex-1">{children}</main>
         </div>
     );
