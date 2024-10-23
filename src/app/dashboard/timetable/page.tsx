@@ -6,7 +6,13 @@ import { getEvents } from "@lib/events";
 import { FiveOf } from "@core/types/timetable";
 import TimetableMenu from "@components/timetable/menu";
 import TimetableData from "@components/timetable/timetableData";
-import { getWeek, getWeekDays, getDateFromWeek } from "@lib/dates";
+import {
+    getWeek,
+    getWeekDays,
+    getDateFromWeek,
+    getTermAndWeek,
+    getDate,
+} from "@lib/dates";
 
 export const metadata = {
     title: "SpaceFinder | Timetable",
@@ -41,6 +47,8 @@ const Timetable = async ({
         include: { courses: { include: { common: true } }, common: true },
     });
 
+    const termData = await getTermAndWeek(week, getDate().getFullYear());
+
     if (!teacher) {
         if (session.role !== "ADMIN") {
             return;
@@ -55,6 +63,7 @@ const Timetable = async ({
                                 teacher={""}
                                 teachers={allTeachers}
                                 week={week}
+                                termData={termData}
                             />
                         </div>
                     </section>
@@ -74,6 +83,7 @@ const Timetable = async ({
                             teacher={teacher.code}
                             teachers={allTeachers}
                             week={week}
+                            termData={termData}
                         />
 
                         <TimetableData

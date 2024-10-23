@@ -2,7 +2,7 @@ import React from "react";
 
 import { auth } from "@auth";
 import prisma from "@db/orm";
-import { getWeek } from "@lib/dates";
+import { getWeek, getTermAndWeek, getDate } from "@lib/dates";
 import Booking from "@components/booking/book";
 import BookingMenu from "@components/booking/menu";
 
@@ -77,6 +77,8 @@ const Book = async ({
             break;
     }
 
+    const termData = await getTermAndWeek(week, getDate().getFullYear());
+
     return (
         <main>
             <div className="flex flex-col gap-8 p-2 py-12">
@@ -88,6 +90,7 @@ const Book = async ({
                             course={course}
                             courses={courses}
                             week={week}
+                            termData={termData}
                         />
 
                         {course && teacher && (
