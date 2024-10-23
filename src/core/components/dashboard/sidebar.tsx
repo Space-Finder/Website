@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faTicket,
     faList,
-    faGear,
     faCalendarCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -40,11 +39,6 @@ const DashboardSidebar = () => {
             text: "Book",
             link: "/dashboard/book",
             icon: faTicket,
-        },
-        {
-            text: "Settings",
-            link: "/dashboard/settings",
-            icon: faGear,
         },
     ];
 
