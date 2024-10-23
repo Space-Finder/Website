@@ -2,7 +2,8 @@
 
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -58,6 +59,7 @@ export default function BookingData({
     teacher: Teacher;
 }) {
     const queryClient = useQueryClient();
+    const router = useRouter();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
@@ -98,6 +100,12 @@ export default function BookingData({
             }
         },
     });
+
+    useEffect(() => {
+        if (course.teacherId !== teacher.id) {
+            router.push(`/dashboard/book?teacher=${teacher.code}`);
+        }
+    }, [teacher]);
 
     const fetchAvailableSpaces = async (period: Period) => {
         try {
