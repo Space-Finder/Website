@@ -15,12 +15,17 @@ const BookingMenu = ({
     teachers,
     course,
     courses,
+    termData,
 }: {
     week: number;
     teacher: string;
     teachers: Teacher[];
     course: Course | null;
     courses: Course[];
+    termData: {
+        term: number;
+        week: number;
+    } | null;
 }) => {
     const today = getDate();
     const session = useSession();
@@ -32,7 +37,12 @@ const BookingMenu = ({
         <div>
             <div className="mb-5 flex flex-col items-center justify-between max-md:gap-3 md:flex-row">
                 <div className="font-inter text-2xl font-bold text-gray-800">
-                    <h1>Book Classes For Week {week}</h1>
+                    <h1>
+                        Book Classes For:{" "}
+                        {termData
+                            ? `Term ${termData.term} Week ${termData.week}`
+                            : `Week ${week}`}
+                    </h1>
                 </div>
                 {session.data?.role !== "TEACHER" && (
                     <div className="flex items-center justify-center gap-5">

@@ -11,12 +11,18 @@ const TimetableMenu = ({
     week,
     teacher,
     teachers,
+    termData,
 }: {
     week: number;
     teacher: string;
     teachers: Teacher[];
+    termData: {
+        term: number;
+        week: number;
+    } | null;
 }) => {
     const today = getDate();
+    console.log("E", termData);
 
     return (
         <div className="mb-5 flex flex-col items-center justify-between max-md:gap-3 md:flex-row">
@@ -40,6 +46,11 @@ const TimetableMenu = ({
                         weekday: "long",
                     })}
                 </h6>
+                {termData && (
+                    <h1>
+                        Term {termData.term} Week {termData.week}
+                    </h1>
+                )}
             </div>
             <div className="flex items-center justify-center gap-5">
                 <div>
