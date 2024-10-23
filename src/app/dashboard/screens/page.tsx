@@ -15,6 +15,8 @@ const Screens = async () => {
                         key={common.id}
                         width={1080}
                         height={1920}
+                        placeholder="blur"
+                        blurDataURL="/empty.webp"
                         className="h-auto w-full rounded-md shadow-lg"
                         src={`${process.env.NEXT_PUBLIC_API_URL}/api/image?common_id=${common.id}`}
                     />
