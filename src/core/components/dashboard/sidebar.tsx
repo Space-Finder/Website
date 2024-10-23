@@ -9,6 +9,7 @@ import {
     faTicket,
     faList,
     faCalendarCheck,
+    faLock,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useSession } from "@hooks/session";
@@ -41,6 +42,14 @@ const DashboardSidebar = () => {
             icon: faTicket,
         },
     ];
+
+    if (session.data.role === "ADMIN") {
+        dashboardPages.push({
+            text: "Admin Dashboard",
+            link: "/admin/",
+            icon: faLock,
+        });
+    }
 
     return (
         <aside className="flex h-screen w-64 flex-col overflow-y-auto border-r bg-white px-4 py-8 dark:border-gray-700 dark:bg-gray-900 rtl:border-l rtl:border-r-0">

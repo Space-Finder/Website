@@ -18,14 +18,6 @@ export default function HomepageButton() {
                 >
                     Go To Dashboard
                 </Link>
-                {session.data.role === "ADMIN" && (
-                    <Link
-                        className="rounded-xl bg-[#5D7FD6] px-16 py-3 text-2xl text-white"
-                        href="/admin"
-                    >
-                        Go To Admin Panel
-                    </Link>
-                )}
             </div>
         );
     }
