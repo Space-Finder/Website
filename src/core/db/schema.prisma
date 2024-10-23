@@ -178,11 +178,3 @@ enum Year {
   Y12
   Y13
 }
-
-enum Day {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-}
