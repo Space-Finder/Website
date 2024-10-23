@@ -126,8 +126,8 @@ export default function BookingData({
     };
 
     const handleBookingAttempt = () => {
-        const alreadyBookedSpace = periodsBooked.find(
-            (b) => b.periodNumber === selectedTodo?.periodNumber,
+        const alreadyBookedSpace = bookingsMade.find(
+            (b) => b && b.spaceId === selectedSpace,
         );
 
         if (alreadyBookedSpace) {
