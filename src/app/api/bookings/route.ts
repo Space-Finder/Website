@@ -292,3 +292,137 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ booking });
 }
+
+const EditBodyValidator = z.object({
+    periodNumber: z.number(),
+    week: z.number().min(1).max(52),
+    spaceId: z.string().cuid(),
+    bookingId: z.string().cuid(),
+});
+
+export async function PATCH(request: NextRequest) {
+    const session = await auth();
+
+    if (!session) {
+        return NextResponse.json(
+            { detail: "You are not logged in!" },
+            { status: 401 },
+        );
+    }
+
+    if (session.role === "STUDENT") {
+        return NextResponse.json(
+            { detail: "You don't have permission to access this" },
+            { status: 403 },
+        );
+    }
+
+    const validator = EditBodyValidator.safeParse(await request.json());
+
+    if (!validator.success) {
+        return NextResponse.json(
+            { detail: "Bad request! You're missing some fields" },
+            { status: 400 },
+        );
+    }
+
+    const { spaceId, periodNumber, bookingId, week: number } = validator.data;
+
+    if (!bookingId) {
+        return NextResponse.json(
+            { detail: "Missing booking ID" },
+            { status: 400 },
+        );
+    }
+
+    const booking = await prisma.booking.findUnique({
+        where: { id: bookingId },
+        include: {
+            course: true,
+            teacher: true,
+            space: true,
+        },
+    });
+
+    if (!booking) {
+        return NextResponse.json(
+            { detail: "Booking not found!" },
+            { status: 404 },
+        );
+    }
+
+    // if they are a teacher they can only change their own booking
+    if (booking.teacher.userId !== session.id && session.role === "TEACHER") {
+        return NextResponse.json(
+            { detail: "You can't do that" },
+            { status: 403 },
+        );
+    }
+
+    const space = await prisma.space.findUnique({ where: { id: spaceId } });
+
+    if (!space) {
+        return NextResponse.json(
+            { detail: "Invalid Space ID provided!" },
+            { status: 400 },
+        );
+    }
+
+    const week = await prisma.week.findFirst({
+        where: {
+            number,
+            year: getDate().getFullYear(),
+            yearGroup: booking.course.year,
+        },
+    });
+
+    if (!week) {
+        return NextResponse.json(
+            { detail: "Invalid week number!" },
+            { status: 400 },
+        );
+    }
+
+    const bookingConflict = await prisma.booking.findMany({
+        where: {
+            periodNumber,
+            spaceId,
+            week: {
+                number: week.number,
+            },
+            course: {
+                line: booking.course.line,
+                commonId: booking.course.commonId,
+            },
+        },
+    });
+
+    if (bookingConflict.length) {
+        return NextResponse.json(
+            {
+                detail: "Booking conflict: This space is already booked for the specified period.",
+            },
+            { status: 409 },
+        );
+    }
+
+    console.log({
+        where: { id: bookingId },
+        data: {
+            spaceId,
+            periodNumber,
+            weekId: week.id,
+        },
+    });
+
+    const updatedBooking = await prisma.booking.update({
+        where: { id: bookingId },
+        data: {
+            spaceId,
+            periodNumber,
+            weekId: week.id,
+        },
+    });
+
+    return NextResponse.json({ updatedBooking });
+}
