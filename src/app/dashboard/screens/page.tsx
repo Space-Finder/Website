@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 
 import prisma from "@db/orm";
 
@@ -10,13 +9,11 @@ const Screens = async () => {
         <div className="m-4 grid grid-cols-2 items-center justify-center gap-4 md:grid-cols-4">
             {commons.map((common) => {
                 return (
-                    <Image
+                    <img
                         alt={common.name}
                         key={common.id}
                         width={1080}
                         height={1920}
-                        placeholder="blur"
-                        blurDataURL="/empty.webp"
                         className="h-auto w-full rounded-md shadow-lg"
                         src={`${process.env.NEXT_PUBLIC_API_URL}/api/image?common_id=${common.id}`}
                     />
