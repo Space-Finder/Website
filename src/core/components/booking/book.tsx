@@ -1,16 +1,16 @@
 "use client";
 
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Course, Teacher, Space, Booking as DBBooking } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { BookingDialog } from "./dialog";
 
 import { formatTime } from "@lib/times";
+import { useCreateBookingMutation } from "./mutation";
+import { getBookings, getAvailableSpaces } from "./api";
 import { Period as FullPeriod } from "@core/types/timetable";
+import { Course, Teacher, Space, Booking as DBBooking } from "@prisma/client";
 
 type Period = Extract<FullPeriod, { periodType: "CLASS" }>;
 type Booking = DBBooking & { space: Space; course: Course };
@@ -19,35 +19,6 @@ type Booking = DBBooking & { space: Space; course: Course };
 const findTime = (line: number, period: number) => {
     return null;
 };
-
-async function getBookings(courseId: string, teacherId: string, week: number) {
-    const response = await axios.get(`/api/bookings`, {
-        params: {
-            courseId,
-            teacherId,
-            week,
-        },
-        withCredentials: true,
-    });
-    return response.data;
-}
-
-async function getAvailableSpaces(
-    periodNumber: number,
-    line: number,
-    commonId: string,
-    week: number,
-) {
-    const response = await axios.get(`/api/spaces`, {
-        params: {
-            periodNumber,
-            line,
-            commonId,
-            week,
-        },
-    });
-    return response.data.availableSpaces;
-}
 
 export default function BookingData({
     week,
@@ -58,54 +29,53 @@ export default function BookingData({
     course: Course;
     teacher: Teacher;
 }) {
-    const queryClient = useQueryClient();
     const router = useRouter();
-
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [showAlert, setShowAlert] = useState(false);
-
     const [availableSpaces, setAvailableSpaces] = useState<Space[]>([]);
     const [selectedSpace, setSelectedSpace] = useState<string | null>(null);
     const [selectedTodo, setSelectedTodo] = useState<Period | null>(null);
+    const [showAlert, setShowAlert] = useState(false);
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["bookings", course.id, week, teacher.id],
         queryFn: async () => await getBookings(course.id, teacher.id, week),
     });
 
-    const bookingMutation = useMutation({
-        mutationFn: async (newBooking: {
-            periodNumber: number;
-            teacherId: string;
-            courseId: string;
-            spaceId: string;
-            week: number;
-        }) => {
-            await axios.post(`/api/bookings`, newBooking);
-        },
-        onSuccess: () => {
-            toast.success("Booking successful!");
-            queryClient.invalidateQueries({
-                queryKey: ["bookings", course.id, week, teacher.id],
-            });
-            setIsDialogOpen(false);
-            setSelectedSpace(null);
-            setSelectedTodo(null);
-        },
-        onError: (error: any) => {
-            if (axios.isAxiosError(error) && error.response?.status === 409) {
-                toast.error("Space is already booked for this period.");
-            } else {
-                toast.error("An error occurred while making the booking.");
-            }
-        },
-    });
+    const bookingMutation = useCreateBookingMutation(
+        course.id,
+        teacher.id,
+        week,
+        setIsDialogOpen,
+    );
 
     useEffect(() => {
         if (course.teacherId !== teacher.id) {
             router.push(`/dashboard/book?teacher=${teacher.code}`);
         }
     }, [teacher]);
+
+    const handleBookingAttempt = () => {
+        const alreadyBookedSpace = data?.bookingsMade.find(
+            (b: Booking) => b && b.spaceId === selectedSpace,
+        );
+
+        if (alreadyBookedSpace) {
+            return setShowAlert(true);
+        }
+
+        handleMakeBooking();
+    };
+
+    const handleMakeBooking = () => {
+        if (!selectedTodo || !selectedSpace) return;
+        bookingMutation.mutate({
+            periodNumber: selectedTodo.periodNumber,
+            teacherId: teacher.id,
+            courseId: course.id,
+            spaceId: selectedSpace,
+            week: week,
+        });
+    };
 
     const fetchAvailableSpaces = async (period: Period) => {
         try {
@@ -121,33 +91,8 @@ export default function BookingData({
         }
     };
 
-    const handleMakeBooking = () => {
-        if (!selectedTodo || !selectedSpace) return;
-
-        bookingMutation.mutate({
-            periodNumber: selectedTodo.periodNumber,
-            teacherId: teacher.id,
-            courseId: course.id,
-            spaceId: selectedSpace,
-            week: week,
-        });
-    };
-
-    const handleBookingAttempt = () => {
-        const alreadyBookedSpace = bookingsMade.find(
-            (b) => b && b.spaceId === selectedSpace,
-        );
-
-        if (alreadyBookedSpace) {
-            return setShowAlert(true);
-        }
-
-        handleMakeBooking();
-    };
-
-    const handleAlertClose = () => {
-        setShowAlert(false);
-    };
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>Error fetching data.</div>;
 
     const {
         periodsBooked,
@@ -157,19 +102,7 @@ export default function BookingData({
         periodsBooked: Period[];
         periodsToBook: Period[];
         bookingsMade: Booking[];
-    } = data || {
-        periodsBooked: [],
-        periodsToBook: [],
-        bookingsMade: [],
-    };
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error fetching data.</div>;
-    }
+    } = data;
 
     return (
         <div className="container mx-auto p-6">
@@ -254,83 +187,16 @@ export default function BookingData({
                 )}
             </div>
 
-            {/* Dialog for selecting space */}
-            <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-                    <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white p-6 shadow-lg">
-                        <Dialog.Title className="mb-4 text-xl font-semibold">
-                            Select a Space
-                        </Dialog.Title>
-                        <ul className="space-y-2">
-                            {availableSpaces.map((space) => (
-                                <li
-                                    key={space.id}
-                                    className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100" : ""}`}
-                                    onClick={() => setSelectedSpace(space.id)}
-                                >
-                                    {space.name}
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="mt-6 flex justify-end">
-                            {showAlert ? (
-                                <AlertDialog.Root
-                                    open={showAlert}
-                                    onOpenChange={handleAlertClose}
-                                >
-                                    <AlertDialog.Trigger asChild>
-                                        <button
-                                            className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                                            disabled={!selectedSpace}
-                                        >
-                                            Book Space
-                                        </button>
-                                    </AlertDialog.Trigger>
-                                    <AlertDialog.Portal>
-                                        <AlertDialog.Overlay className="fixed inset-0 bg-black opacity-50" />
-                                        <AlertDialog.Content className="fixed left-1/2 top-1/2 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white p-6 shadow-lg">
-                                            <AlertDialog.Title className="text-xl font-bold">
-                                                Space Already Booked
-                                            </AlertDialog.Title>
-                                            <AlertDialog.Description className="mt-4 text-gray-600">
-                                                You have already booked this
-                                                space for another period. Are
-                                                you sure you want to proceed?
-                                            </AlertDialog.Description>
-                                            <div className="mt-6 flex justify-end space-x-4">
-                                                <AlertDialog.Cancel asChild>
-                                                    <button className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">
-                                                        Cancel
-                                                    </button>
-                                                </AlertDialog.Cancel>
-                                                <AlertDialog.Action asChild>
-                                                    <button
-                                                        className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                                                        onClick={
-                                                            handleMakeBooking
-                                                        }
-                                                    >
-                                                        Yes, Proceed
-                                                    </button>
-                                                </AlertDialog.Action>
-                                            </div>
-                                        </AlertDialog.Content>
-                                    </AlertDialog.Portal>
-                                </AlertDialog.Root>
-                            ) : (
-                                <button
-                                    className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                                    onClick={handleBookingAttempt}
-                                    disabled={!selectedSpace}
-                                >
-                                    Book Space
-                                </button>
-                            )}
-                        </div>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            <BookingDialog
+                isDialogOpen={isDialogOpen}
+                setIsDialogOpen={setIsDialogOpen}
+                availableSpaces={availableSpaces}
+                selectedSpace={selectedSpace}
+                setSelectedSpace={setSelectedSpace}
+                handleBookingAttempt={handleBookingAttempt}
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
+            />
         </div>
     );
 }
