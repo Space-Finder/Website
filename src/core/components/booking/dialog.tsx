@@ -106,3 +106,51 @@ export function BookingDialog({
         </Dialog.Root>
     );
 }
+
+export function BookingEditDialog({
+    isOpen,
+    onClose,
+    availableSpaces,
+    selectedSpace,
+    setSelectedSpace,
+    handleSaveEdit,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    availableSpaces: Space[];
+    selectedSpace: string | null;
+    setSelectedSpace: (spaceId: string) => void;
+    handleSaveEdit: (updatedSpaceId: string) => void;
+}) {
+    return (
+        <Dialog.Root open={isOpen} onOpenChange={onClose}>
+            <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+                <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white p-6 shadow-lg">
+                    <Dialog.Title className="mb-4 text-xl font-semibold">
+                        Edit Booking
+                    </Dialog.Title>
+                    <ul className="space-y-2">
+                        {availableSpaces.map((space) => (
+                            <li
+                                key={space.id}
+                                className={`cursor-pointer rounded border p-2 hover:bg-gray-50 ${selectedSpace === space.id ? "bg-green-100" : ""}`}
+                                onClick={() => setSelectedSpace(space.id)}
+                            >
+                                {space.name}
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                            onClick={() => handleSaveEdit(selectedSpace!)}
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
+    );
+}

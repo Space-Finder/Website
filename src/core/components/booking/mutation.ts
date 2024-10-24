@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { Dispatch, SetStateAction } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function useCreateBookingMutation(
+export function useBookingMutation(
     courseId: string,
     teacherId: string,
     week: number,
@@ -34,6 +34,34 @@ export function useCreateBookingMutation(
             } else {
                 toast.error("An error occurred while making the booking.");
             }
+        },
+    });
+}
+
+export function useEditBookingMutation(
+    courseId: string,
+    teacherId: string,
+    week: number,
+) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (updatedBooking: {
+            bookingId: string;
+            spaceId: string;
+            periodNumber: number;
+            week: number;
+        }) => {
+            await axios.patch(`/api/bookings/`, updatedBooking);
+        },
+        onSuccess: () => {
+            toast.success("Booking updated successfully!");
+            queryClient.invalidateQueries({
+                queryKey: ["bookings", courseId, week, teacherId],
+            });
+        },
+        onError: () => {
+            toast.error("An error occurred while updating the booking.");
         },
     });
 }

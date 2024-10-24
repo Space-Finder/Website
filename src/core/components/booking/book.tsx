@@ -4,12 +4,12 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { BookingDialog } from "./dialog";
 
 import { formatTime } from "@lib/times";
-import { useCreateBookingMutation } from "./mutation";
 import { getBookings, getAvailableSpaces } from "./api";
+import { BookingDialog, BookingEditDialog } from "./dialog";
 import { Period as FullPeriod } from "@core/types/timetable";
+import { useBookingMutation, useEditBookingMutation } from "./mutation";
 import { Course, Teacher, Space, Booking as DBBooking } from "@prisma/client";
 
 type Period = Extract<FullPeriod, { periodType: "CLASS" }>;
@@ -31,9 +31,12 @@ export default function BookingData({
 }) {
     const router = useRouter();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [availableSpaces, setAvailableSpaces] = useState<Space[]>([]);
     const [selectedSpace, setSelectedSpace] = useState<string | null>(null);
     const [selectedTodo, setSelectedTodo] = useState<Period | null>(null);
+    const [selectedBookingToEdit, setSelectedBookingToEdit] =
+        useState<Booking | null>(null);
     const [showAlert, setShowAlert] = useState(false);
 
     const { data, isLoading, error } = useQuery({
@@ -41,11 +44,17 @@ export default function BookingData({
         queryFn: async () => await getBookings(course.id, teacher.id, week),
     });
 
-    const bookingMutation = useCreateBookingMutation(
+    const bookingMutation = useBookingMutation(
         course.id,
         teacher.id,
         week,
         setIsDialogOpen,
+    );
+
+    const editBookingMutation = useEditBookingMutation(
+        course.id,
+        teacher.id,
+        week,
     );
 
     useEffect(() => {
@@ -77,6 +86,25 @@ export default function BookingData({
         });
     };
 
+    const handleEditBooking = (todo: Period, booking: Booking) => {
+        setSelectedBookingToEdit(booking);
+        fetchAvailableSpaces(todo);
+        setEditDialogOpen(true);
+    };
+
+    const handleSaveEdit = (updatedSpaceId: string) => {
+        if (!selectedBookingToEdit) return;
+
+        editBookingMutation.mutate({
+            bookingId: selectedBookingToEdit.id,
+            spaceId: updatedSpaceId,
+            periodNumber: selectedBookingToEdit.periodNumber,
+            week: week,
+        });
+
+        setEditDialogOpen(false);
+    };
+
     const fetchAvailableSpaces = async (period: Period) => {
         try {
             const availableSpaces = await getAvailableSpaces(
@@ -103,7 +131,7 @@ export default function BookingData({
         periodsToBook: Period[];
         bookingsMade: Booking[];
     } = data;
-
+    console.log(data);
     return (
         <div className="container mx-auto p-6">
             {/* Periods Already Booked */}
@@ -114,7 +142,11 @@ export default function BookingData({
                 {periodsBooked.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                         {bookingsMade.map((booking, index) => {
-                            if (!booking) {
+                            const todo = periodsBooked.find(
+                                (p) => p.line == booking?.course?.line,
+                            );
+
+                            if (!booking || !todo) {
                                 return;
                             }
 
@@ -129,12 +161,25 @@ export default function BookingData({
                                 >
                                     <h3 className="text-md mb-2 font-semibold">
                                         {periodTime || (
-                                            <>Period {booking.periodNumber}</>
+                                            <>
+                                                Period {booking.periodNumber}{" "}
+                                                {formatTime(todo.startTime)} -{" "}
+                                                {formatTime(todo.endTime)}
+                                            </>
                                         )}
                                     </h3>
-                                    <p className="text-sm text-gray-700">
-                                        Booked in: {booking.space.name || "e"}
+                                    <p className="mb-2 text-sm text-gray-700">
+                                        Booked in: {booking.space.name}
                                     </p>
+
+                                    <button
+                                        className="w-full rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                                        onClick={() =>
+                                            handleEditBooking(todo, booking)
+                                        }
+                                    >
+                                        Edit
+                                    </button>
                                 </div>
                             );
                         })}
@@ -196,6 +241,15 @@ export default function BookingData({
                 handleBookingAttempt={handleBookingAttempt}
                 showAlert={showAlert}
                 setShowAlert={setShowAlert}
+            />
+
+            <BookingEditDialog
+                isOpen={editDialogOpen}
+                onClose={() => setEditDialogOpen(false)}
+                availableSpaces={availableSpaces}
+                selectedSpace={selectedSpace}
+                setSelectedSpace={setSelectedSpace}
+                handleSaveEdit={handleSaveEdit}
             />
         </div>
     );
